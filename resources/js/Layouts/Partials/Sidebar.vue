@@ -74,7 +74,7 @@
         label: 'Time Entries',
         icon: 'fa-regular fa-clock',
         submenus: [
-            { label: 'View Records', link: '/time', icon: 'fa-solid fa-list' }
+            { label: 'View Entries', link: '/time', icon: 'fa-solid fa-list' }
         ]
         },
         {
@@ -90,7 +90,8 @@
         label: 'Payroll',
         icon: 'fa-solid fa-money-bill',
         submenus: [
-            { label: 'Process Payroll', link: '/payroll', icon: 'fa-solid fa-list' }
+            { label: 'Process Payroll', link: '/payroll', icon: 'fa-solid fa-list' },
+            { label: 'Payslip', link: '/payroll', icon: 'fa-solid fa-list' }
         ]
         },
         {
@@ -98,7 +99,8 @@
         label: 'Contributions',
         icon: 'fa-solid fa-piggy-bank',
         submenus: [
-            { label: 'View Contributions', link: '/contributions', icon: 'fa-solid fa-list' }
+            { label: 'View Contributions', link: '/contributions', icon: 'fa-solid fa-list' },
+            { label: 'My Contributions', link: '/contributions', icon: 'fa-solid fa-list' },
         ]
         },
         {
@@ -106,7 +108,8 @@
         label: 'Documents',
         icon: 'fa-solid fa-file-alt',
         submenus: [
-            { label: 'View Documents', link: '/documents', icon: 'fa-solid fa-list' }
+            { label: 'View Documents', link: '/documents', icon: 'fa-solid fa-list' },
+            { label: 'My Documents', link: '/documents/mydocs', icon: 'fa-solid fa-list' },
         ]
         },
         {
@@ -114,7 +117,8 @@
         label: 'Compliance',
         icon: 'fa-solid fa-list-check',
         submenus: [
-            { label: 'View Compliance', link: '/compliance', icon: 'fa-solid fa-list' }
+            { label: 'View Compliance', link: '/compliance', icon: 'fa-solid fa-list' },
+            { label: 'My Compliance', link: '/compliance/show', icon: 'fa-solid fa-list' },
         ]
         }
     ]);

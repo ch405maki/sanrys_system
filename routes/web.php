@@ -53,6 +53,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/attendance', function () {
         return Inertia::render('Attendance/Index');
     })->name('attendance.index');
+
+    Route::get('/attendance/show', function () {
+        return Inertia::render('Attendance/Show');
+    })->name('attendance.show');
 });
 
 // payroll
@@ -74,6 +78,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/documents', function () {
         return Inertia::render('Documents/Index');
     })->name('documents.index');
+
+    Route::get('/documents/mydocs', function () {
+        return Inertia::render('Documents/MyDocs');
+    })->name('documents.mydocs');
 });
 
 // compliance
@@ -81,6 +89,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/compliance', function () {
         return Inertia::render('Compliance/Index');
     })->name('compliance.index');
+
+    Route::get('/compliance/show', function () {
+        return Inertia::render('Compliance/MyCompliance');
+    })->name('compliance.show');
 });
 
 Route::middleware('auth')->group(function () {
