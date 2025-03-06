@@ -1,21 +1,15 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\AttendanceController;
+
+use App\Models\Attendance;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -32,9 +26,7 @@ Route::get('/dashboard', function () {
 
 // employee
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/employee', function () {
-        return Inertia::render('Employees/Index');
-    })->name('employee.index');
+    Route::get('/employee', [EmployeeController::class, 'index'])->name('employee.index');
 
     Route::get('/employee/create', function () {
         return Inertia::render('Employees/Create');
@@ -43,20 +35,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // time
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/time', function () {
-        return Inertia::render('Time/Index');
-    })->name('time.index');
+    Route::get('/time', [AttendanceController::class, 'create'])->name('time.index');
 });
 
 // attendance
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/attendance', function () {
-        return Inertia::render('Attendance/Index');
-    })->name('attendance.index');
 
-    Route::get('/attendance/show', function () {
-        return Inertia::render('Attendance/Show');
-    })->name('attendance.show');
+    Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::get('/attendance/show/{id}', [AttendanceController::class, 'show'])->name('attendance.show');
 });
 
 // payroll

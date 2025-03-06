@@ -1,11 +1,34 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted } from 'vue';
 
+const props = defineProps({
+    user: {
+        type: Object,
+        required: true,
+    },
+});
 
+// Format date (e.g., "March 5, 2025")
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+};
+
+// Format time (e.g., "8:00 AM")
+const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+    });
+};
 </script>
-
 <template>
     <Head title="Time Entries" />
 
@@ -19,8 +42,8 @@ import { ref, onMounted, onUnmounted } from 'vue';
                             <div class="absolute inset-0 rounded-full shadow-inner"></div>
                         </div>
                         <div class="ml-4">
-                            <h2 class="font-bold text-gray-800 text-lg">Jane Doe</h2>
-                            <p class="text-gray-600">Software Engineer</p>
+                            <h2 class="font-bold text-gray-800 text-lg">{{user.name}}</h2>
+                            <p class="text-gray-600">{{ user.profile.position }}</p>
                         </div>
                     </div>
                 </div>
@@ -32,6 +55,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
                 </div>
             </div>
         </template>
+
         
         <main class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 text-gray-900">
@@ -70,10 +94,16 @@ import { ref, onMounted, onUnmounted } from 'vue';
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-300 ">
-                                    <tr v-for="index of 4" class="bg-white transition-all duration-500 hover:bg-gray-50">
-                                        <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900"> March 5, 2025 </td>
-                                        <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900"> 8:00 AM </td>
-                                        <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900"> 4:00 PM </td>
+                                    <tr v-for="attendance in user.attendances" :key="attendance.id" class="bg-white transition-all duration-500 hover:bg-gray-50">
+                                        <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900">
+                                            {{ formatDate(attendance.time_in) }}
+                                        </td>
+                                        <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900">
+                                            {{ formatTime(attendance.time_in) }}
+                                        </td>
+                                        <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900">
+                                            {{ attendance.time_out ? formatTime(attendance.time_out) : 'N/A' }}
+                                        </td>
                                         <td class="flex p-5 items-center justify-center gap-0.5">
                                             <button class="p-2  rounded-full bg-white group transition-all duration-500 hover:bg-indigo-600 flex item-center">
                                                 <svg class="cursor-pointer" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
