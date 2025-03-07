@@ -91,7 +91,7 @@
         icon: 'fa-solid fa-money-bill',
         submenus: [
             { label: 'Process Payroll', link: '/payroll', icon: 'fa-solid fa-list' },
-            { label: 'Payslip', link: '/payroll', icon: 'fa-solid fa-list' }
+            { label: 'Payslip', link: '/payslip', icon: 'fa-solid fa-list' }
         ]
         },
         {

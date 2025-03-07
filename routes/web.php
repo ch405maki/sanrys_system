@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\PayrollController;
 
 use App\Models\Attendance;
 use Illuminate\Foundation\Application;
@@ -50,6 +51,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/payroll', function () {
         return Inertia::render('Payroll/Index');
     })->name('payroll.index');
+
+    Route::get('/payslip', [PayrollController::class, 'payslip'])->name('payroll.payslip');
+    Route::get('/filter-payslip', [PayrollController::class, 'filterPayslip']);
 });
 
 // contributions

@@ -140,7 +140,7 @@
         const FetchSidebar = async () => {
         try {
             const response = await fetch('/sidebar');
-            sidebar.value = await response.json(); // Fetch the data as an array
+            sidebar.value = await response.json();
         } catch (error) {
             console.error('Error fetching sidebar:', error);
         }

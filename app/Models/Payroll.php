@@ -21,6 +21,7 @@ class Payroll extends Model
         'net_pay',
         'pay_period_start',
         'pay_period_end',
+        'cut_off_period',
     ];
 
     public function user()
