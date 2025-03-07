@@ -22,6 +22,7 @@ class Payroll extends Model
         'pay_period_start',
         'pay_period_end',
         'cut_off_period',
+        'total_workdays',
     ];
 
     public function user()

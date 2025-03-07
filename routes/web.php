@@ -48,10 +48,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // payroll
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/payroll', function () {
-        return Inertia::render('Payroll/Index');
-    })->name('payroll.index');
-
+    Route::get('/payroll', [PayrollController::class, 'index'])->name('payroll.index');
+    
     Route::get('/payslip', [PayrollController::class, 'payslip'])->name('payroll.payslip');
     Route::get('/filter-payslip', [PayrollController::class, 'filterPayslip']);
 });

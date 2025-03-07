@@ -2,25 +2,25 @@
     <AuthenticatedLayout>
     <Head title="Payslip" />
     <template #header>
-        <div class="flex justify-between items-center p-[5px]">
+        <div class="flex justify-between items-center ">
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label for="cut-off-period" class="block text-sm font-medium text-gray-700">Cut-Off Period</label>
                     <select id="cut-off-period" v-model="selectedCutOff" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        <option value="1-15">1-15</option>
-                        <option value="16-31">16-31</option>
+                        <option value="1-15">Cut-Off Period 1-15</option>
+                        <option value="16-31">Cut-Off Period 16-31</option>
                     </select>
                 </div>
                 <div>
-                    <label for="month" class="block text-sm font-medium text-gray-700">Month</label>
                     <input type="month" id="month" v-model="selectedMonth" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                 </div>
             </div>
-            <div>
+            <div class="grid grid-cols-2 gap-4">
                 <button @click="filterPayslip" :disabled="isLoading" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed">
                     <span v-if="isLoading">Loading...</span>
-                    <span v-else>Filter Payslip</span>
+                    <span v-else><i class="fa-solid fa-filter"></i> Filter Payslip</span>
                 </button>
+                    <a href="" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-file-export"></i> Export</a>
             </div>
         </div>
     </template>
@@ -33,7 +33,7 @@
                     <h1 class="text-xl font-bold text-gray-700">Payslip</h1>
                 </div>
 
-                <div class="border-b-2 border-gray-300 pb-8 mb-8">
+                <div class="border-b-2 border-dashed border-gray-300 pb-8 mb-8">
                     <div class="flex justify-between">
                         <div>
                             <h2 class="text-xl text-gray-700 mb-2  font-bold uppercase">{{ user.name }}</h2>
@@ -54,37 +54,49 @@
                     <thead>
                         <tr>
                             <th class="text-gray-700 font-bold uppercase py-2">Brakedown</th>
-                            <th class="text-gray-700 font-bold uppercase py-2">Total</th>
-                        </tr>
+                            <th class="text-gray-700 font-bold uppercase p-2 bg-gray-100">Total</th>
+                        </tr>   
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="py-4 text-gray-700">Basic Salary</td>
-                            <td class="py-4 text-gray-700">₱{{ payroll.basic_salary }}</td>
+                            <td class="py-2 text-gray-700">Total Work Day</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">{{ total_workdays }}</td>
                         </tr>
                         <tr>
-                            <td class="py-4 text-gray-700">Overtime Pay</td>
-                            <td class="py-4 text-gray-700">₱{{ payroll.overtime_pay }}</td>
+                            <td class="py-2 text-gray-700">Basic Salary</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">₱{{ payroll.basic_salary }}</td>
                         </tr>
                         <tr>
-                            <td class="py-4 text-gray-700">Holiday Pay</td>
-                            <td class="py-4 text-gray-700">₱{{ payroll.holiday_pay }}</td>
+                            <td class="py-2 text-gray-700">Overtime Pay</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">₱{{ payroll.overtime_pay }}</td>
                         </tr>
                         <tr>
-                            <td class="py-4 text-gray-700">Allowance</td>
-                            <td class="py-4 text-gray-700">₱{{ payroll.allowance }}</td>
+                            <td class="py-2 text-gray-700">Holiday Pay</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">₱{{ payroll.holiday_pay }}</td>
                         </tr>
                         <tr>
-                            <td class="py-4 text-gray-700">Deductions</td>
-                            <td class="py-4 text-gray-700">₱{{ payroll.deductions }}</td>
+                            <td class="py-2 text-gray-700">Allowance</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">₱{{ payroll.allowance }}</td>
+                        </tr>
+                        <tr class="border-t border-gray-300 border-dashed">
+                            <td class="py-2 text-gray-700">SSS</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">₱</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 text-gray-700">Philhealth</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">₱</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 text-gray-700">Total Deductions</td>
+                            <td class="p-2 bg-red-100 text-gray-700">₱{{ payroll.deductions }}</td>
+                        </tr>
+                        <tr class="border-t border-dashed border-gray-300 ">
+                            <td class="py-2 text-gray-700"></td>
+                            <td class="p-2 bg-green-100 text-gray-700 font-bold text-lg">Total Pay: ₱ {{ payroll.net_pay }}</td>
                         </tr>
                     </tbody>
                 </table>
-                <div class="flex justify-end mb-8">
-                    <div class="text-gray-700 mr-2">Total Pay:</div>
-                    <div class="text-gray-700 font-bold text-xl"> ₱ {{ payroll.net_pay }}</div>
-                </div>
-                <div class="border-t-2 border-gray-300 pt-8 mb-8">
+                <div class="border-t-2 border-dashed border-gray-300 pt-8 mb-8">
                     <div class="text-gray-400 mb-2 italic">Sanry's Foreign Currency Exchange Inc. </div>
                 </div>
             </div>
@@ -106,7 +118,8 @@ import { Head } from '@inertiajs/vue3';
 const props = defineProps({
     payroll: Object,
     user: Object,
-    profile: Object
+    profile: Object,
+    total_workdays: Number, 
 });
 
 const selectedCutOff = ref('1-15');
