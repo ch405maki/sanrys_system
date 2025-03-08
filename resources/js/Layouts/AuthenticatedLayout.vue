@@ -180,7 +180,6 @@
     // Use Inertia's usePage hook to access the page props
     const { props } = usePage();
     const user = props.auth.user;
-    console.log(props.auth.user.profile.profile_picture);
     
     // Computed property to check if the user is a student
     const isStudent = computed(() => {

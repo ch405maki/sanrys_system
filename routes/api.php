@@ -15,13 +15,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Employee routes
 Route::post('/employees', [EmployeeController::class, 'store']);
 
+// Attendance routes
 Route::post('/attendances/time-in', [AttendanceController::class, 'timeIn']);
 Route::post('/attendances/time-out', [AttendanceController::class, 'timeOut']);
 Route::post('/attendances/has-timed-in-today', [AttendanceController::class, 'hasTimedInToday']);
 
+// Payroll routes
 Route::post('/payroll/generate/{userId}', [PayrollController::class, 'generatePayroll']);
+Route::post('/payroll/generate-all', [PayrollController::class, 'generatePayrollForAll']);
+
 
 // Document upload routes
 Route::post('/documents/upload', [DocumentController::class, 'upload']); // Upload a document

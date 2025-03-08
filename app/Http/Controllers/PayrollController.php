@@ -17,6 +17,67 @@ class PayrollController extends Controller
         return Inertia::render('Payroll/Index',['users' => $users ]);
     }
 
+    // Generate all user payrolls
+    public function generatePayrollForAll(Request $request)
+    {
+        $request->validate([
+            'startDate' => 'required|date',
+            'endDate' => 'required|date|after_or_equal:startDate',
+        ]);
+
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+
+        $users = User::with('attendances')->get();
+        $payrollDetails = [];
+
+        foreach ($users as $user) {
+            $totalWorkdays = $user->attendances()
+                ->whereBetween('time_in', [$startDate, $endDate])
+                ->count();
+
+            $ratePerDay = 500;  
+            $basicSalary = $totalWorkdays * $ratePerDay;
+            $overtimePay = 0;
+            $holidayPay = 0;
+            $allowance = 200;
+            $deduction = 100;
+
+            $grossPay = $basicSalary + $overtimePay + $holidayPay + $allowance;
+            $netPay = $grossPay - $deduction;
+
+            Payroll::create([
+                'user_id' => $user->id,
+                'rate_per_day' => $ratePerDay,
+                'basic_salary' => $basicSalary,
+                'overtime_pay' => $overtimePay,
+                'holiday_pay' => $holidayPay,
+                'allowance' => $allowance,
+                'deductions' => $deduction,
+                'gross_pay' => $grossPay,
+                'net_pay' => $netPay,
+                'pay_period_start' => $startDate,
+                'pay_period_end' => $endDate,
+            ]);
+
+            $payrollDetails[] = [
+                'user' => $user->name,
+                'basic_salary' => $basicSalary,
+                'overtime_pay' => $overtimePay,
+                'holiday_pay' => $holidayPay,
+                'gross_pay' => $grossPay,
+                'net_pay' => $netPay,
+            ];
+        }
+
+        return response()->json([
+            'message' => 'Payroll generated for all users successfully!',
+            'payrollDetails' => $payrollDetails
+        ]);
+    }
+
+
+    // generate single user payroll
     public function generatePayroll(Request $request, $userId)
     {
         // Validate the request
