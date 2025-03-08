@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\DocumentController;
 
 use App\Models\Attendance;
 use Illuminate\Foundation\Application;
@@ -13,7 +14,7 @@ use Inertia\Inertia;
 
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
+    return Inertia::render('Auth/Login', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
@@ -41,7 +42,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // attendance
 Route::middleware(['auth', 'verified'])->group(function () {
-
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::get('/attendance/show/{id}', [AttendanceController::class, 'show'])->name('attendance.show');
 });
@@ -63,13 +63,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // documents
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/documents', function () {
-        return Inertia::render('Documents/Index');
-    })->name('documents.index');
-
-    Route::get('/documents/mydocs', function () {
-        return Inertia::render('Documents/MyDocs');
-    })->name('documents.mydocs');
+    Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
+    Route::get('/documents/mydocs', [DocumentController::class, 'mydoc'])->name('documents.mydocs');
+    Route::get('/documents/show/{user}', [DocumentController::class, 'show'])->name('documents.show');
 });
 
 // compliance

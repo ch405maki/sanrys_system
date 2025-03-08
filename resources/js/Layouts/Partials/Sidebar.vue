@@ -112,15 +112,15 @@
             { label: 'My Documents', link: '/documents/mydocs', icon: 'fa-solid fa-list' },
         ]
         },
-        {
-        key: 'compliance',
-        label: 'Compliance',
-        icon: 'fa-solid fa-list-check',
-        submenus: [
-            { label: 'View Compliance', link: '/compliance', icon: 'fa-solid fa-list' },
-            { label: 'My Compliance', link: '/compliance/show', icon: 'fa-solid fa-list' },
-        ]
-        }
+        // {
+        // key: 'compliance',
+        // label: 'Compliance',
+        // icon: 'fa-solid fa-list-check',
+        // submenus: [
+        //     { label: 'View Compliance', link: '/compliance', icon: 'fa-solid fa-list' },
+        //     { label: 'My Compliance', link: '/compliance/show', icon: 'fa-solid fa-list' },
+        // ]
+        // }
     ]);
     </script>
     

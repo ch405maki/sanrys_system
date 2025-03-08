@@ -61,8 +61,11 @@
                             <span class="sr-only">Open user menu</span>
                             <img 
                                 class="h-8 w-8 rounded-full" 
-                                :src="user.profile_picture ? `/storage/profile_pictures/${$page.props.auth.user.profile_picture}` : '/images/profile/profile.png'" 
-                                alt="">
+                                :src="user.profile?.profile_picture 
+                                    ? `/storage/${user.profile.profile_picture}` 
+                                    : '/images/profile/profile.png'" 
+                                alt="User Profile Picture"
+                            >
                         </button>
                         <!-- Profile dropdown -->
                         <div v-if="isProfileMenuOpen" @click.away="isProfileMenuOpen = false" class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
@@ -177,6 +180,7 @@
     // Use Inertia's usePage hook to access the page props
     const { props } = usePage();
     const user = props.auth.user;
+    console.log(props.auth.user.profile.profile_picture);
     
     // Computed property to check if the user is a student
     const isStudent = computed(() => {

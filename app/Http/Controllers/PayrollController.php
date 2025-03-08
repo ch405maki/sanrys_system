@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\DB;
 class PayrollController extends Controller
 {
     public function index (){
-        return Inertia::render('Payroll/Index');
+        $users = User::with('profile')->get();
+        return Inertia::render('Payroll/Index',['users' => $users ]);
     }
 
     public function generatePayroll(Request $request, $userId)
