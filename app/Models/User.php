@@ -49,7 +49,6 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profile::class);
     }
-
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
@@ -57,5 +56,9 @@ class User extends Authenticatable
     public function documents()
     {
         return $this->hasMany(Document::class);
+    }
+    public function payrolls()
+    {
+        return $this->hasMany(Payroll::class);
     }
 }

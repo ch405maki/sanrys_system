@@ -17,6 +17,13 @@ class PayrollController extends Controller
         return Inertia::render('Payroll/Index',['users' => $users ]);
     }
 
+    public function report(){
+        
+        $users = User::has('payrolls')->with('payrolls')->get();
+
+        return Inertia::render('Payroll/Report',['users' => $users ]);
+    }
+
     // Generate all user payrolls
     public function generatePayrollForAll(Request $request)
     {
@@ -28,6 +35,9 @@ class PayrollController extends Controller
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
 
+        // Use the improved getCutOffPeriod logic
+        $cutOffPeriod = $this->getCutOffPeriod($startDate, $endDate);
+
         $users = User::with('attendances')->get();
         $payrollDetails = [];
 
@@ -36,7 +46,7 @@ class PayrollController extends Controller
                 ->whereBetween('time_in', [$startDate, $endDate])
                 ->count();
 
-            $ratePerDay = 500;  
+            $ratePerDay = 500;
             $basicSalary = $totalWorkdays * $ratePerDay;
             $overtimePay = 0;
             $holidayPay = 0;
@@ -58,15 +68,19 @@ class PayrollController extends Controller
                 'net_pay' => $netPay,
                 'pay_period_start' => $startDate,
                 'pay_period_end' => $endDate,
+                'total_workdays' => $totalWorkdays,
+                'cut_off_period' => $cutOffPeriod, // Improved logic applied here
             ]);
 
             $payrollDetails[] = [
                 'user' => $user->name,
+                'total_workdays' => $totalWorkdays,
                 'basic_salary' => $basicSalary,
                 'overtime_pay' => $overtimePay,
                 'holiday_pay' => $holidayPay,
                 'gross_pay' => $grossPay,
                 'net_pay' => $netPay,
+                'cut_off_period' => $cutOffPeriod, // Display cut-off period
             ];
         }
 
@@ -75,7 +89,6 @@ class PayrollController extends Controller
             'payrollDetails' => $payrollDetails
         ]);
     }
-
 
     // generate single user payroll
     public function generatePayroll(Request $request, $userId)

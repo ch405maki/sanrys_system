@@ -49,6 +49,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // payroll
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/payroll', [PayrollController::class, 'index'])->name('payroll.index');
+    Route::get('/payroll/report', [PayrollController::class, 'report'])->name('payroll.report');
     
     Route::get('/payslip', [PayrollController::class, 'payslip'])->name('payroll.payslip');
     Route::get('/filter-payslip', [PayrollController::class, 'filterPayslip']);

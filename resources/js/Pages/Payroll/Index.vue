@@ -15,8 +15,9 @@
         <main class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6">
                 <!-- Payroll Date Selection Form -->
-                <div class="flex items-center gap-4 mb-6">
-                    <input 
+                <div class="flex items-center justify-between gap-4 mb-6">
+                    <div class="flex gap-2">
+                        <input 
                         v-model="startDate" 
                         type="date" 
                         class="border p-2 rounded-md w-40"
@@ -26,11 +27,12 @@
                         type="date" 
                         class="border p-2 rounded-md w-40"
                     />
+                    </div>
                     <div>
                         <button 
                             @click="generatePayrollForAll"
-                            class="bg-green-100 hover:bg-green-200 py-3 px-4 rounded-md border border-green-500 text-gray-700">
-                            <i class="fa-solid fa-download mr-2"></i> Generate All
+                            class="bg-green-100 hover:bg-green-200 py-2 px-4 rounded-md border border-green-500 text-gray-700">
+                            <i class="fa-solid fa-circle-notch"></i> Generate All
                         </button>
                     </div>
                 </div>
@@ -65,7 +67,7 @@
                                         <td class="flex p-5 items-center justify-center gap-0.5">
                                             <button 
                                                 @click="generatePayroll(user.id)" 
-                                                class="bg-green-100 text-sm hover:bg-green-200 py-3 px-4 rounded-md border border-green-500 text-gray-700">
+                                                class="bg-green-100 text-sm hover:bg-green-200 py-2 px-4 rounded-md border border-green-500 text-gray-700">
                                                 <i class="fa-solid fa-outdent"></i> Generate Payroll
                                             </button>
                                         </td>
@@ -81,6 +83,8 @@
                     <h3 class="text-lg font-semibold mb-2">Generated Payroll Details</h3>
                     <ul v-for="payroll in payrollData" :key="payroll.user">
                         <li><strong>User:</strong> {{ payroll.user }}</li>
+                        <li><strong>Total Workdays:</strong> {{ payroll.total_workdays }}</li>
+                        <li><strong>Cut-off Period:</strong> {{ payroll.cut_off_period }}</li>
                         <li><strong>Basic Salary:</strong> {{ payroll.basic_salary }}</li>
                         <li><strong>Overtime Pay:</strong> {{ payroll.overtime_pay }}</li>
                         <li><strong>Holiday Pay:</strong> {{ payroll.holiday_pay }}</li>
@@ -151,4 +155,5 @@ const generatePayrollForAll = async () => {
         alert('Failed to generate payroll. Please try again.');
     }
 };
+
 </script>
