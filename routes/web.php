@@ -5,6 +5,8 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\DeductionController;
+use App\Http\Controllers\SalaryController;
 
 use App\Models\Attendance;
 use Illuminate\Foundation\Application;
@@ -57,10 +59,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // contributions
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/contributions', function () {
-        return Inertia::render('Contributions/Index');
-    })->name('contributions.index');
+    Route::get('/contributions', [DeductionController::class, 'index'])->name('contributions.index');      
+    Route::get('/deductions', [DeductionController::class, 'contribution'])->name('deductions.index');      
 });
+
+// salary
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/salary', [SalaryController::class, 'index'])->name('salary.index');      
+});
+
 
 // documents
 Route::middleware(['auth', 'verified'])->group(function () {

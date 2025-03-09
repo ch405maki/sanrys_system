@@ -6,6 +6,8 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Payroll;
+use App\Models\Salary;
+use App\Models\Deduction;
 use App\Models\Attendance;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -26,69 +28,85 @@ class PayrollController extends Controller
 
     // Generate all user payrolls
     public function generatePayrollForAll(Request $request)
-    {
-        $request->validate([
-            'startDate' => 'required|date',
-            'endDate' => 'required|date|after_or_equal:startDate',
-        ]);
+{
+    $request->validate([
+        'startDate' => 'required|date',
+        'endDate' => 'required|date|after_or_equal:startDate',
+    ]);
 
-        $startDate = $request->input('startDate');
-        $endDate = $request->input('endDate');
+    $startDate = $request->input('startDate');
+    $endDate = $request->input('endDate');
 
-        // Use the improved getCutOffPeriod logic
-        $cutOffPeriod = $this->getCutOffPeriod($startDate, $endDate);
+    $cutOffPeriod = $this->getCutOffPeriod($startDate, $endDate);
 
-        $users = User::with('attendances')->get();
-        $payrollDetails = [];
+    $users = User::with(['attendances', 'salary', 'deductions'])->get();
+    $payrollDetails = [];
 
-        foreach ($users as $user) {
-            $totalWorkdays = $user->attendances()
-                ->whereBetween('time_in', [$startDate, $endDate])
-                ->count();
+    foreach ($users as $user) {
+        $salary = $user->salary;
 
-            $ratePerDay = 500;
-            $basicSalary = $totalWorkdays * $ratePerDay;
-            $overtimePay = 0;
-            $holidayPay = 0;
-            $allowance = 200;
-            $deduction = 100;
-
-            $grossPay = $basicSalary + $overtimePay + $holidayPay + $allowance;
-            $netPay = $grossPay - $deduction;
-
-            Payroll::create([
-                'user_id' => $user->id,
-                'rate_per_day' => $ratePerDay,
-                'basic_salary' => $basicSalary,
-                'overtime_pay' => $overtimePay,
-                'holiday_pay' => $holidayPay,
-                'allowance' => $allowance,
-                'deductions' => $deduction,
-                'gross_pay' => $grossPay,
-                'net_pay' => $netPay,
-                'pay_period_start' => $startDate,
-                'pay_period_end' => $endDate,
-                'total_workdays' => $totalWorkdays,
-                'cut_off_period' => $cutOffPeriod, // Improved logic applied here
-            ]);
-
-            $payrollDetails[] = [
-                'user' => $user->name,
-                'total_workdays' => $totalWorkdays,
-                'basic_salary' => $basicSalary,
-                'overtime_pay' => $overtimePay,
-                'holiday_pay' => $holidayPay,
-                'gross_pay' => $grossPay,
-                'net_pay' => $netPay,
-                'cut_off_period' => $cutOffPeriod, // Display cut-off period
-            ];
+        if (!$salary) {
+            continue; // Skip users without salary data
         }
 
-        return response()->json([
-            'message' => 'Payroll generated for all users successfully!',
-            'payrollDetails' => $payrollDetails
+        $totalWorkdays = $user->attendances()
+            ->whereBetween('time_in', [$startDate, $endDate])
+            ->count();
+
+        $ratePerDay = $salary->rate_per_day;
+        $overtimeRate = $salary->overtime_rate;
+        $holidayRate = $salary->holiday_rate;
+
+        $basicSalary = $totalWorkdays * $ratePerDay;
+
+        $overtimePay = 0; // Calculate based on attendance logic if needed
+        $holidayPay = 0;  // Add logic for holiday pay if required
+        $allowance = 200; // Fixed for now
+
+        // Fetch deductions
+        $deductions = $user->deductions;
+        $totalDeduction = $deductions 
+            ? $deductions->pag_ibig + $deductions->sss + $deductions->philhealth + $deductions->maxicare
+            : 0;
+
+        $grossPay = $basicSalary + $overtimePay + $holidayPay + $allowance;
+        $netPay = $grossPay - $totalDeduction;
+
+        Payroll::create([
+            'user_id' => $user->id,
+            'rate_per_day' => $ratePerDay,
+            'basic_salary' => $basicSalary,
+            'overtime_pay' => $overtimePay,
+            'holiday_pay' => $holidayPay,
+            'allowance' => $allowance,
+            'deductions' => $totalDeduction,
+            'gross_pay' => $grossPay,
+            'net_pay' => $netPay,
+            'pay_period_start' => $startDate,
+            'pay_period_end' => $endDate,
+            'total_workdays' => $totalWorkdays,
+            'cut_off_period' => $cutOffPeriod,
         ]);
+
+        $payrollDetails[] = [
+            'user' => $user->name,
+            'total_workdays' => $totalWorkdays,
+            'basic_salary' => $basicSalary,
+            'overtime_pay' => $overtimePay,
+            'holiday_pay' => $holidayPay,
+            'gross_pay' => $grossPay,
+            'net_pay' => $netPay,
+            'cut_off_period' => $cutOffPeriod,
+            'deductions' => $totalDeduction
+        ];
     }
+
+    return response()->json([
+        'message' => 'Payroll generated for all users successfully!',
+        'payrollDetails' => $payrollDetails
+    ]);
+}
+
 
     // generate single user payroll
     public function generatePayroll(Request $request, $userId)

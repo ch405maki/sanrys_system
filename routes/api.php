@@ -8,6 +8,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DeductionController;
 
 Route::get('/user/profile', [ProfileController::class, 'getProfile'])->middleware('auth');
 
@@ -33,3 +34,7 @@ Route::post('/documents/upload', [DocumentController::class, 'upload']); // Uplo
 Route::get('/users/{userId}/documents', [DocumentController::class, 'index']); // Get all documents for a user
 Route::put('/documents/{documentId}/status', [DocumentController::class, 'updateStatus']); // Update document status
 Route::delete('/documents/{documentId}', [DocumentController::class, 'destroy']); // Delete a document
+
+
+// Deduction
+Route::post('/deductions/store', [DeductionController::class, 'store'])->name('deductions.store');

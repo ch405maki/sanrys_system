@@ -4,6 +4,9 @@ namespace Database\Seeders;
 use Illuminate\Support\Facades\Hash;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+
+use App\Models\Salary;
+use App\Models\Deduction;
 use App\Models\User;
 
 class DatabaseSeeder extends Seeder

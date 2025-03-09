@@ -100,7 +100,16 @@
         label: 'Contributions',
         icon: 'fa-solid fa-piggy-bank',
         submenus: [
-            { label: 'View Contributions', link: '/contributions', icon: 'fa-solid fa-list' },
+            { label: 'Manage Contributions', link: '/contributions', icon: 'fa-solid fa-list' },
+            { label: 'My Contributions', link: '/contributions', icon: 'fa-solid fa-list' },
+        ]
+        },
+        {
+        key: 'salary',
+        label: 'Salary',
+        icon: 'fa-solid fa-coins',
+        submenus: [
+            { label: 'Manage Salary', link: '/salary', icon: 'fa-solid fa-list' },
             { label: 'My Contributions', link: '/contributions', icon: 'fa-solid fa-list' },
         ]
         },

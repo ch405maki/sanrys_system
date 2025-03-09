@@ -37,10 +37,7 @@
                                 <tbody class="divide-y divide-gray-300 ">
                                     <tr v-for="user in users"  :key="user.id" class="bg-white transition-all duration-500 hover:bg-gray-50">
                                         <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900"> {{user.name}} </td>
-                                        <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900"> {{user.deductions.sss}} </td>
-                                        <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900"> {{user.deductions.pag_ibig}} </td>
-                                        <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900"> {{user.deductions.philhealth}} </td>
-                                        <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900"> {{user.deductions.maxicare}} </td>
+                                        
                                         <td class="flex p-5 items-center justify-center gap-2">
                                             <button class="p-2 rounded-full bg-white group transition-all duration-500 hover:bg-red-600 flex item-center">
                                                 <svg class="" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,10 +68,10 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium">Select User:</label>
                     <select v-model="form.user_id" class="border p-2 rounded-md w-full">
-                        <option v-if="usersWithoutDeductions.length === 0" disabled>
+                        <option v-if="usersWithoutSalary.length === 0" disabled>
                             No users available
                         </option>
-                        <option v-for="user in usersWithoutDeductions" :key="user.id" :value="user.id">
+                        <option v-for="user in usersWithoutSalary" :key="user.id" :value="user.id">
                             {{ user.name }} ({{ user.email }})
                         </option>
                     </select>
@@ -82,20 +79,16 @@
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium">Pag-IBIG:</label>
-                        <input v-model="form.pag_ibig" type="number" class="border p-2 rounded-md w-full" />
+                        <label class="block text-sm font-medium">Rate Per Day:</label>
+                        <input v-model="form.rate_per_day" type="text" class="border p-2 rounded-md w-full" />
                     </div>
                     <div>
-                        <label class="block text-sm font-medium">SSS:</label>
-                        <input v-model="form.sss" type="number" class="border p-2 rounded-md w-full" />
+                        <label class="block text-sm font-medium">Overtime Rate:</label>
+                        <input v-model="form.overtime_rate" type="text" class="border p-2 rounded-md w-full" />
                     </div>
                     <div>
-                        <label class="block text-sm font-medium">PhilHealth:</label>
-                        <input v-model="form.philhealth" type="number" class="border p-2 rounded-md w-full" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium">Maxicare:</label>
-                        <input v-model="form.maxicare" type="number" class="border p-2 rounded-md w-full" />
+                        <label class="block text-sm font-medium">Holiday:</label>
+                        <input v-model="form.holiday_rate" type="text" class="border p-2 rounded-md w-full" />
                     </div>
                 </div>
 
@@ -118,7 +111,7 @@ import axios from 'axios';
 
 const props = defineProps ({
     users: {type: Array},
-    usersWithoutDeductions: {type: Array},
+    usersWithoutSalary: {type: Array},
 })
 // Reactive state to control modal visibility
 const isUploadModalOpen = ref(false);
@@ -136,20 +129,9 @@ const closeUploadModal = () => {
 
 const form = ref({
     user_id: '',
-    pag_ibig: 0,
-    sss: 0,
-    philhealth: 0,
-    maxicare: 0
+    rate_per_day: '',
+    overtime_rate: '',
+    holiday_rate: '',
 });
 
-// Save deductions using Axios
-const saveDeduction = async () => {
-    try {
-        await axios.post('/api/deductions/store', form.value);
-        alert('Deduction saved successfully!');
-    } catch (error) {
-        console.error('Error:', error.response?.data || error.message);
-        alert('Failed to save deduction.');
-    }
-};
 </script>
