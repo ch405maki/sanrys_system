@@ -3,42 +3,51 @@
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Employee Payroll Summary Report</h2>
+            <div class="flex items-center justify-between">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">Payroll / <span class="text-xs font-normal text-green-900">Employee Payroll Summary Report</span></h2>
+
+                <!-- Filters -->
+                <div class="flex items-center space-x-4">
+                    <div>
+                        <label class="block text-sm font-medium">Select Month:</label>
+                        <input 
+                            type="month" 
+                            v-model="filters.month" 
+                            class="input-field"
+                            @change="updatePayrollDate"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Cut-off Period:</label>
+                        <select v-model="filters.cutOff" class="input-field" @change="updatePayrollDate">
+                            <option value="">All</option>
+                            <option value="1-15">1-15</option>
+                            <option value="16-30">16-30</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Export</label>
+                        <button @click="exportToExcel" class="bg-green-100 hover:bg-green-200 py-2 px-4 rounded-md border border-green-500 text-gray-700"> 
+                            <i class="fa-solid fa-download mr-2"></i>
+                            Download
+                        </button>
+                    </div>
+                </div>
+            </div>
         </template>
 
-        <div class="bg-white shadow-sm sm:rounded-lg p-6 max-w-6xl mx-auto">
+        <div id="payrollTable"  class="bg-white shadow-sm sm:rounded-lg p-6 max-w-6xl mx-auto">
             <!-- Report Header -->
             <div class="text-center mb-6">
-                <h1 class="text-2xl font-bold uppercase">SANRYS FOREIGN CURRENCY EXCHANGE INC.</h1>
-                <p class="text-lg font-semibold mt-2">
+                <h1 class="text-xl font-bold uppercase">SANRYS FOREIGN CURRENCY EXCHANGE INC.</h1>
+                <p class="text-sm font-semibold mt-2">
                     Payroll Date: {{ payrollDate }}
                 </p>
             </div>
 
-            <!-- Filters -->
-            <div class="flex items-center gap-4 mb-6">
-                <div>
-                    <label class="block text-sm font-medium">Select Month:</label>
-                    <input 
-                        type="month" 
-                        v-model="filters.month" 
-                        class="input-field"
-                        @change="updatePayrollDate"
-                    />
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium">Cut-off Period:</label>
-                    <select v-model="filters.cutOff" class="input-field" @change="updatePayrollDate">
-                        <option value="">All</option>
-                        <option value="1-15">1-15</option>
-                        <option value="16-30">16-30</option>
-                    </select>
-                </div>
-            </div>
-
             <!-- Payroll Table -->
-            <table class="w-full table-auto border-collapse border border-gray-300">
+            <table class="text-xs w-full table-auto border-collapse border border-gray-300">
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="p-4 border border-gray-300">Employee Name</th>
@@ -91,6 +100,7 @@ import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import * as XLSX from 'xlsx';
 
 const props = defineProps({
     payrolls: { type: Array, required: true },
@@ -133,6 +143,12 @@ const formatCurrency = (value) => {
         style: 'currency',
         currency: 'PHP'
     }).format(value);
+};
+
+const exportToExcel = () => {
+    const table = document.getElementById('payrollTable');
+    const workbook = XLSX.utils.table_to_book(table);
+    XLSX.writeFile(workbook, 'Payroll_Report.xlsx');
 };
 </script>
 
