@@ -76,4 +76,21 @@ class DocumentController extends Controller
             'document' => $document,
         ], 201);
     }
+
+    public function destroy($id)
+    {
+        // Find the document by ID
+        $document = Document::find($id);
+
+        // If the document doesn't exist, return a 404 error
+        if (!$document) {
+            return response()->json(['message' => 'Document not found'], 404);
+        }
+
+        // Delete the document
+        $document->delete();
+
+        // Return a success response
+        return response()->json(['message' => 'Document deleted successfully']);
+    }
 }

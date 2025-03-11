@@ -13,7 +13,9 @@ class Salary extends Model
         'user_id',
         'rate_per_day',
         'overtime_rate',
-        'holiday_rate'
+        'holiday_rate',
+        'allowance',
+        'monthly_rate'
     ];
 
     public function user()

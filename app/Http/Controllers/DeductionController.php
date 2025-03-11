@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 use App\Models\Deduction;
@@ -18,14 +19,6 @@ class DeductionController extends Controller
             'users' => $users,
             'usersWithoutDeductions' => $usersWithoutDeductions
         ]);
-    }
-    
-
-    // Display the deduction management page
-    public function contribution()
-    {
-        $users = User::select('id', 'name', 'email')->get();
-        return inertia('Contributions/Manage', ['users' => $users]);
     }
 
     // Store or update deduction

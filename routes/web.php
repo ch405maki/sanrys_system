@@ -7,6 +7,7 @@ use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DeductionController;
 use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\ReportController;
 
 use App\Models\Attendance;
 use Illuminate\Foundation\Application;
@@ -31,10 +32,12 @@ Route::get('/dashboard', function () {
 // employee
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/employee', [EmployeeController::class, 'index'])->name('employee.index');
+    Route::get('/employee/create', function () { return Inertia::render('Employees/Create');})->name('employee.create');
 
-    Route::get('/employee/create', function () {
-        return Inertia::render('Employees/Create');
-    })->name('employee.create');
+    Route::get('/employees/{id}', [EmployeeController::class, 'show'])->name('employee.show');
+    Route::get('/employees/{id}/edit', [EmployeeController::class, 'edit'])->name('employee.edit');
+    Route::put('/employees/{id}', [EmployeeController::class, 'update'])->name('employee.update');
+
 });
 
 // time
@@ -60,12 +63,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // contributions
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/contributions', [DeductionController::class, 'index'])->name('contributions.index');      
-    Route::get('/deductions', [DeductionController::class, 'contribution'])->name('deductions.index');      
 });
 
 // salary
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/salary', [SalaryController::class, 'index'])->name('salary.index');      
+    Route::get('/salary/show', [SalaryController::class, 'salary'])->name('deductions.show');      
+
 });
 
 
@@ -86,6 +90,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Compliance/MyCompliance');
     })->name('compliance.show');
 });
+
+// reports
+Route::get('/reports/payroll', [ReportController::class, 'employeePayrollSummary'])
+    ->name('reports.payroll');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

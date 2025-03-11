@@ -105,4 +105,24 @@ class AttendanceController extends Controller
 
         return response()->json(['has_timed_in' => $hasTimedIn], 200);
     }
+
+    public function update(Request $request, $id)
+    {
+        // Find the attendance record by ID
+        $attendance = Attendance::find($id);
+
+        // If the record doesn't exist, return a 404 error
+        if (!$attendance) {
+            return response()->json(['message' => 'Attendance record not found'], 404);
+        }
+
+        // Update the record
+        $attendance->update([
+            'time_in' => $request->input('time_in'),
+            'time_out' => $request->input('time_out'),
+        ]);
+
+        // Return a success response
+        return response()->json(['message' => 'Attendance updated successfully']);
+    }
 }   

@@ -6,7 +6,7 @@
             <div class="flex justify-between items-center w-full max-w-7xl mx-auto">
                 <div>
                     <div class="flex items-center">
-                        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Contributions / <span class="text-xs font-normal text-green-900">Manage Contributions</span></h2>
+                        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Salary / <span class="text-xs font-normal text-green-900">Manage Salary</span></h2>
                     </div>
                 </div>
                 <div>
@@ -25,18 +25,22 @@
                         <div class="overflow-hidden">
                             <table class="table-auto min-w-full rounded-xl">
                                 <thead>
-                                    <tr class="bg-gray-50">
+                                    <tr class="bg-gray-50"> 
                                         <th scope="col" class="p-5 text-left whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize min-w-[150px]"> Staff Name </th>
-                                        <th scope="col" class="p-5 text-left whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize min-w-[150px]"> SSS </th>
-                                        <th scope="col" class="p-5 text-left whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize"> Pag-Ibig </th>
-                                        <th scope="col" class="p-5 text-left whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize"> Philhealth </th>
-                                        <th scope="col" class="p-5 text-left whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize"> Maxicare </th>
+                                        <th scope="col" class="p-5 text-left whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize min-w-[150px]"> Monthly Rate </th>
+                                        <th scope="col" class="p-5 text-left whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize"> Basic Salary</th>
+                                        <th scope="col" class="p-5 text-left whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize"> Rate Per Day </th>
+                                        <th scope="col" class="p-5 text-left whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize"> Allowance </th>
                                         <th scope="col" class="p-5 text-center whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize"> Actions </th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-300 ">
                                     <tr v-for="user in users"  :key="user.id" class="bg-white transition-all duration-500 hover:bg-gray-50">
                                         <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900"> {{user.name}} </td>
+                                        <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900"> ₱ {{user.salary.monthly_rate}} </td>
+                                        <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900"> ₱ {{user.salary.monthly_rate / 2}} </td>
+                                        <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900"> ₱ {{user.salary.rate_per_day}} </td>
+                                        <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900"> ₱ {{user.salary.allowance}} </td>
                                         
                                         <td class="flex p-5 items-center justify-center gap-2">
                                             <button class="p-2 rounded-full bg-white group transition-all duration-500 hover:bg-red-600 flex item-center">
@@ -64,7 +68,7 @@
                 <button @click="closeUploadModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
-                <h3 class="text-lg font-semibold mb-4">Register New Employee</h3>
+                <h3 class="text-lg font-semibold mb-4">Register New Employee Salary</h3>
                 <div class="mb-4">
                     <label class="block text-sm font-medium">Select User:</label>
                     <select v-model="form.user_id" class="border p-2 rounded-md w-full">
@@ -77,26 +81,34 @@
                     </select>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-4 mb-2">
                     <div>
                         <label class="block text-sm font-medium">Rate Per Day:</label>
-                        <input v-model="form.rate_per_day" type="text" class="border p-2 rounded-md w-full" />
+                        <input v-model="form.rate_per_day" type="number" class="border p-2 rounded-md w-full" />
                     </div>
                     <div>
                         <label class="block text-sm font-medium">Overtime Rate:</label>
-                        <input v-model="form.overtime_rate" type="text" class="border p-2 rounded-md w-full" />
+                        <input v-model="form.overtime_rate" type="number" class="border p-2 rounded-md w-full" />
                     </div>
                     <div>
-                        <label class="block text-sm font-medium">Holiday:</label>
-                        <input v-model="form.holiday_rate" type="text" class="border p-2 rounded-md w-full" />
+                        <label class="block text-sm font-medium">Holiday Rate:</label>
+                        <input v-model="form.holiday_rate" type="number" class="border p-2 rounded-md w-full" />
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium">Allowance:</label>
+                        <input v-model="form.allowance" type="number" class="border p-2 rounded-md w-full" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Monthly Rate:</label>
+                    <input v-model="form.monthly_rate" type="number" class="border p-2 rounded-md w-full" />
                 </div>
 
                 <button
-                    @click="saveDeduction"
-                    class="mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                    @click="saveSalary"
+                    class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                 >
-                    Save Deduction
+                    Save Salary
                 </button>
             </div>
         </div>
@@ -129,9 +141,22 @@ const closeUploadModal = () => {
 
 const form = ref({
     user_id: '',
-    rate_per_day: '',
-    overtime_rate: '',
-    holiday_rate: '',
+    rate_per_day: 0,
+    overtime_rate: 0,
+    holiday_rate: 0,
+    allowance: 0,
+    monthly_rate: 0
 });
+
+// Save salary data
+const saveSalary = async () => {
+    try {
+        await axios.post('/api/salaries/store', form.value);
+        alert('Salary saved successfully!');
+        fetchUsers(); // Refresh the list after saving
+    } catch (error) {
+        alert(error.response?.data?.message || 'Failed to save salary.');
+    }
+};
 
 </script>

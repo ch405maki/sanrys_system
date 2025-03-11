@@ -85,4 +85,82 @@ class EmployeeController extends Controller
         // Return a success response
         return response()->json(['message' => 'Employee created successfully!'], 201);
     }
+
+    public function show($id)
+    {
+        $employee = User::with('profile')->find($id);
+
+        if (!$employee) {
+            return redirect()->route('employee.index')->with('error', 'Employee not found.');
+        }
+
+        return Inertia::render('Employees/Show', [
+            'employee' => $employee
+        ]);
+    }
+
+    public function edit($id)
+    {
+        $employee = User::with('profile')->find($id);
+
+        if (!$employee) {
+            return redirect()->route('employee.index')->with('error', 'Employee not found.');
+        }
+
+        return Inertia::render('Employees/Edit', [
+            'employee' => $employee
+        ]);
+    }
+
+
+    public function update(Request $request, $id)
+    {
+        $employee = User::with('profile')->find($id);
+
+        if (!$employee) {
+            return redirect()->route('employee.index')->with('error', 'Employee not found.');
+        }
+
+        // Validate request data
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255',
+            'position' => 'required|string',
+            'branch' => 'required|string',
+            'contact_number' => 'nullable|string|max:20',
+            'age' => 'nullable|integer',
+            'sex' => 'nullable|string|in:Male,Female,Other',
+            'civil_status' => 'nullable|string|in:Single,Married,Divorced,Widowed',
+            'citizenship' => 'nullable|string|max:255',
+            'religion' => 'nullable|string|max:255',
+            'weight' => 'nullable|numeric',
+            'height' => 'nullable|numeric',
+            'date_of_birth' => 'nullable|date',
+            'place_of_birth' => 'nullable|string|max:255',
+            'present_address' => 'nullable|string|max:255',
+            'permanent_address' => 'nullable|string|max:255',
+        ]);
+
+        // Update employee details
+        $employee->update($request->only('name', 'email'));
+
+        // Update profile details
+        $employee->profile->update($request->only($employee->profile->getFillable()));
+
+        return redirect()->route('employee.show', $employee->id)->with('success', 'Employee updated successfully!');
+    }
+
+
+    
+    public function destroy($id)
+    {
+        $employee = User::find($id);
+
+        if (!$employee) {
+            return response()->json(['message' => 'Employee not found'], 404);
+        }
+
+        $employee->delete();
+        return response()->json(['message' => 'Employee deleted successfully']);
+    }
 }

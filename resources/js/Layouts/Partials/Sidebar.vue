@@ -91,7 +91,6 @@
         icon: 'fa-solid fa-money-bill',
         submenus: [
             { label: 'Process Payroll', link: '/payroll', icon: 'fa-solid fa-list' },
-            { label: 'Payroll Report', link: '/payroll/report', icon: 'fa-solid fa-list' },
             { label: 'Payslip', link: '/payslip', icon: 'fa-solid fa-list' }
         ]
         },
@@ -101,7 +100,6 @@
         icon: 'fa-solid fa-piggy-bank',
         submenus: [
             { label: 'Manage Contributions', link: '/contributions', icon: 'fa-solid fa-list' },
-            { label: 'My Contributions', link: '/contributions', icon: 'fa-solid fa-list' },
         ]
         },
         {
@@ -110,7 +108,7 @@
         icon: 'fa-solid fa-coins',
         submenus: [
             { label: 'Manage Salary', link: '/salary', icon: 'fa-solid fa-list' },
-            { label: 'My Contributions', link: '/contributions', icon: 'fa-solid fa-list' },
+            { label: 'My Salary', link: '/salary/show', icon: 'fa-solid fa-list' },
         ]
         },
         {
@@ -122,15 +120,14 @@
             { label: 'My Documents', link: '/documents/mydocs', icon: 'fa-solid fa-list' },
         ]
         },
-        // {
-        // key: 'compliance',
-        // label: 'Compliance',
-        // icon: 'fa-solid fa-list-check',
-        // submenus: [
-        //     { label: 'View Compliance', link: '/compliance', icon: 'fa-solid fa-list' },
-        //     { label: 'My Compliance', link: '/compliance/show', icon: 'fa-solid fa-list' },
-        // ]
-        // }
+        {
+        key: 'Reports',
+        label: 'Reports',
+        icon: 'fa-solid fa-file-alt',
+        submenus: [
+            { label: 'Payroll Report', link: '/reports/payroll', icon: 'fa-solid fa-list' },
+        ]
+        },
     ]);
     </script>
     
