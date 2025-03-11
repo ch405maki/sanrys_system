@@ -110,18 +110,23 @@ const props = defineProps({
 
 // Filters
 const filters = ref({
-    month: props.selectedMonth,
-    cutOff: props.selectedCutOff
+    month: props.selectedMonth || new Date().toISOString().slice(0, 7), // Default to current month
+    cutOff: props.selectedCutOff || '' // Default to empty string
 });
+
 
 // Payroll Date Display
 const payrollDate = ref('');
 
-// Update Payroll Date
+
 const updatePayrollDate = () => {
-    const monthText = new Date(filters.value.month).toLocaleString('default', { month: 'long', year: 'numeric' });
-    const cutOffText = filters.value.cutOff || '';
-    payrollDate.value = `Payroll Date: ${monthText} ${cutOffText}`.trim();
+    router.get(route('reports.payroll'), {
+        month: filters.value.month,
+        cut_off_period: filters.value.cutOff // Make sure the key name matches the Laravel controller
+    }, {
+        preserveState: true, // Keeps the state without a full reload
+        replace: true // Prevents adding unnecessary history entries
+    });
 };
 
 // Initialize payroll date on load
