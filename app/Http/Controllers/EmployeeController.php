@@ -7,6 +7,13 @@ use Inertia\Inertia;
 
 use App\Models\User;
 use App\Models\Profile;
+use App\Models\Skill;
+use App\Models\EducationalBackground;
+use App\Models\PreviousEmploymentRecord;
+use App\Models\Reference;
+use App\Models\EmergencyContact;
+use App\Models\GovernmentBenefit;
+
 
 use Illuminate\Support\Facades\Hash;    
 use Illuminate\Support\Facades\Validator;
@@ -21,6 +28,7 @@ class EmployeeController extends Controller
         return Inertia::render('Employees/Index', [ 'employees' => $employees ]);
     }
 
+    // Start of Store
     public function store(Request $request)
     {
         // Validate the request data
@@ -43,6 +51,55 @@ class EmployeeController extends Controller
             'place_of_birth' => 'nullable|string|max:255',
             'present_address' => 'nullable|string|max:255',
             'permanent_address' => 'nullable|string|max:255',
+
+            // Skills
+            'skills' => 'nullable|array',
+            'skills.*.skill_name' => 'required|string|max:255',
+            'skills.*.proficiency_level' => 'nullable|string|max:255',
+            'skills.*.description' => 'nullable|string',
+
+            // Educational Background
+            'educational_background' => 'nullable|array',
+            'educational_background.college' => 'nullable|string|max:255',
+            'educational_background.college_course' => 'nullable|string|max:255',
+            'educational_background.college_school_year' => 'nullable|string|max:255',
+            'educational_background.secondary' => 'nullable|string|max:255',
+            'educational_background.secondary_course' => 'nullable|string|max:255',
+            'educational_background.secondary_school_year' => 'nullable|string|max:255',
+            'educational_background.elementary' => 'nullable|string|max:255',
+            'educational_background.elementary_course' => 'nullable|string|max:255',
+            'educational_background.elementary_school_year' => 'nullable|string|max:255',
+
+            // Previous Employment Records
+            'previous_employment_records' => 'nullable|array',
+            'previous_employment_records.*.company_name' => 'required|string|max:255',
+            'previous_employment_records.*.position' => 'required|string|max:255',
+            'previous_employment_records.*.date_employed' => 'required|date',
+            'previous_employment_records.*.salary' => 'required|numeric',
+            'previous_employment_records.*.reason_of_leaving' => 'required|string|max:255',
+
+            // References
+            'references' => 'nullable|array',
+            'references.*.name' => 'required|string|max:255',
+            'references.*.contact' => 'required|string|max:20',
+            'references.*.occupation' => 'required|string|max:255',
+            'references.*.relation' => 'required|string|max:255',
+
+            // Emergency Contacts
+            'emergency_contacts' => 'nullable|array',
+            'emergency_contacts.*.name' => 'required|string|max:255',
+            'emergency_contacts.*.address' => 'required|string|max:255',
+            'emergency_contacts.*.contact' => 'required|string|max:20',
+            'emergency_contacts.*.relation' => 'required|string|max:255',
+
+            // Government Benefits
+            'government_benefits' => 'nullable|array',
+            'government_benefits.sss_no' => 'nullable|string|max:255',
+            'government_benefits.pag_ibig_no' => 'nullable|string|max:255',
+            'government_benefits.philhealth_no' => 'nullable|string|max:255',
+            'government_benefits.tin_no' => 'nullable|string|max:255',
+            'government_benefits.employee_no' => 'nullable|string|max:255',
+            'government_benefits.date_employed' => 'nullable|date',
         ]);
 
         // If validation fails, return the errors
@@ -82,9 +139,53 @@ class EmployeeController extends Controller
             'profile_picture' => $profilePicturePath,
         ]);
 
+        // Store Skills
+        if ($request->has('skills')) {
+            foreach ($request->skills as $skill) {
+                $user->skills()->create([
+                    'skill_name' => $skill['skill_name'],
+                    'proficiency_level' => $skill['proficiency_level'],
+                    'description' => $skill['description'],
+                ]);
+            }
+        }
+
+        // Store Educational Background
+        if ($request->has('educational_background')) {
+            $user->educationalBackground()->create($request->educational_background);
+        }
+
+        // Store Previous Employment Records
+        if ($request->has('previous_employment_records')) {
+            foreach ($request->previous_employment_records as $record) {
+                $user->previousEmploymentRecords()->create($record);
+            }
+        }
+
+        // Store References
+        if ($request->has('references')) {
+            foreach ($request->references as $reference) {
+                $user->references()->create($reference);
+            }
+        }
+
+        // Store Emergency Contacts
+        if ($request->has('emergency_contacts')) {
+            foreach ($request->emergency_contacts as $contact) {
+                $user->emergencyContacts()->create($contact);
+            }
+        }
+
+        // Store Government Benefits
+        if ($request->has('government_benefits')) {
+            $user->governmentBenefits()->create($request->government_benefits);
+        }
+
         // Return a success response
         return response()->json(['message' => 'Employee created successfully!'], 201);
     }
+
+    // End of Store
 
     public function show($id)
     {
@@ -148,8 +249,6 @@ class EmployeeController extends Controller
 
         return redirect()->route('employee.show', $employee->id)->with('success', 'Employee updated successfully!');
     }
-
-
     
     public function destroy($id)
     {

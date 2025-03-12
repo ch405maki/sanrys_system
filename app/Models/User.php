@@ -77,7 +77,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Skill::class);
     }
-    public function educationalBackgrounds()
+    public function educationalBackground()
     {
         return $this->hasMany(EducationalBackground::class);
     }
