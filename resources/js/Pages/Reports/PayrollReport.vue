@@ -118,14 +118,19 @@ const filters = ref({
 // Payroll Date Display
 const payrollDate = ref('');
 
-
+// Update Payroll Date
 const updatePayrollDate = () => {
+    const monthText = new Date(filters.value.month).toLocaleString('default', { month: 'long', year: 'numeric' });
+    const cutOffText = filters.value.cutOff ? `(${filters.value.cutOff})` : '';
+    payrollDate.value = `${monthText} ${cutOffText}`.trim();
+
+    // Send data to the backend for filtering
     router.get(route('reports.payroll'), {
         month: filters.value.month,
-        cut_off_period: filters.value.cutOff // Make sure the key name matches the Laravel controller
+        cut_off_period: filters.value.cutOff
     }, {
-        preserveState: true, // Keeps the state without a full reload
-        replace: true // Prevents adding unnecessary history entries
+        preserveState: true,
+        replace: true
     });
 };
 

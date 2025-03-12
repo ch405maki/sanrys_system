@@ -94,58 +94,60 @@ class PayrollController extends Controller
             'startDate' => 'required|date',
             'endDate' => 'required|date|after_or_equal:startDate',
         ]);
-
+    
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
-
+    
         // Determine the cut-off period
         $cutOffPeriod = $this->getCutOffPeriod($startDate, $endDate);
-
-        $user = User::findOrFail($userId);
-
-        // Example data (can be stored in database in the future)
-        $ratePerDay = 500;   // Employee's daily rate
-        $overtimeRate = 50;  // Per hour
-        $holidayRate = 2;    // Double pay on holidays
-        $allowance = 200;    // Fixed allowance
-        $deduction = 100;    // Example deduction
-
+    
+        // Fetch the user with their attendances and salary
+        $user = User::with(['attendances', 'salary'])->findOrFail($userId);
+    
         // Fetch attendance records within the pay period
         $attendances = $user->attendances()
             ->whereBetween('time_in', [$startDate, $endDate])
             ->get();
-
+    
+        // Calculate total workdays
         $totalWorkdays = $attendances->count();
+    
+        // Get salary details from the user's salary record
+        $ratePerDay = $user->salary?->rate_per_day ?? 0;
+        $allowance = $user->salary?->allowance ?? 0;
+        $monthlyRate = $user->salary?->monthly_rate ?? 0;
+    
+        // Calculate overtime and holiday pay
         $totalOvertime = 0;
         $totalHolidayPay = 0;
-
+    
         // Define public holidays
         $holidays = ['2025-02-25', '2025-04-09']; // Add more dates
-
+    
         foreach ($attendances as $attendance) {
             $timeIn = Carbon::parse($attendance->time_in);
             $timeOut = Carbon::parse($attendance->time_out);
             $workDate = $timeIn->toDateString();
-
+    
             $workHours = $timeIn->diffInHours($timeOut);
-            
+    
             // Check if the work date is a holiday
             if (in_array($workDate, $holidays)) {
-                $totalHolidayPay += $ratePerDay * $holidayRate;
+                $totalHolidayPay += $ratePerDay * 2; // Double pay on holidays
             }
-
+    
             // Calculate overtime (if worked more than 8 hours)
             if ($workHours > 8) {
                 $totalOvertime += ($workHours - 8);
             }
         }
-
+    
         // Compute payroll amounts
         $basicSalary = $totalWorkdays * $ratePerDay;
-        $overtimePay = $totalOvertime * $overtimeRate;
+        $overtimePay = $totalOvertime * ($user->salary?->overtime_rate ?? 50); // Default overtime rate
         $grossPay = $basicSalary + $overtimePay + $totalHolidayPay + $allowance;
-        $netPay = $grossPay - $deduction;
-
+        $netPay = $grossPay - ($user->salary?->deductions ?? 100); // Default deduction
+    
         // Store Payroll Data
         Payroll::create([
             'user_id' => $user->id,
@@ -154,16 +156,16 @@ class PayrollController extends Controller
             'overtime_pay' => $overtimePay,
             'holiday_pay' => $totalHolidayPay,
             'allowance' => $allowance,
-            'deductions' => $deduction,
+            'deductions' => $user->salary?->deductions ?? 100,
             'gross_pay' => $grossPay,
             'net_pay' => $netPay,
             'pay_period_start' => $startDate,
             'pay_period_end' => $endDate,
             'cut_off_period' => $cutOffPeriod,
-            'total_workdays' => $totalWorkdays, // Add total_workdays
+            'total_workdays' => $totalWorkdays,
         ]);
-
-        // Return the payroll details along with total workdays
+    
+        // Return the payroll details
         return response()->json([
             'message' => 'Payroll generated successfully!',
             'total_workdays' => $totalWorkdays,
@@ -176,7 +178,6 @@ class PayrollController extends Controller
             'cut_off_period' => $cutOffPeriod,
         ]);
     }
-
     private function getCutOffPeriod($startDate, $endDate)
     {
         $startDay = Carbon::parse($startDate)->day;

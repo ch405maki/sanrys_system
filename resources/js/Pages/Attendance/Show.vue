@@ -18,9 +18,10 @@
                 </div>
                 <div>
                     <!-- Button to open the modal -->
-                    <button @click="openModal" class="bg-green-600 hover:bg-green-700 py-3 px-4 rounded-md text-white">
-                        <i class="fa-solid fa-file-arrow-down mr-2"></i> Export
-                    </button>
+                    <button @click="exportToExcel" class="bg-green-100 hover:bg-green-200 py-2 px-4 rounded-md border border-green-500 text-gray-700"> 
+                            <i class="fa-solid fa-download mr-2"></i>
+                            Download
+                        </button>
                 </div>
             </div>
         </template>
@@ -33,27 +34,19 @@
                         Time Entries / <span class="text-xs font-normal text-green-900">Manage Time In's Record</span>
                     </h2>
                     <div class="flex items-center">
-                        <select class="bg-gray-100 py-2 px-4 rounded-md">
-                        <option value="January">January</option>
-                        <option value="February">February</option>
-                        <option value="March">March</option>
-                        <option value="April">April</option>
-                        <option value="May">May</option>
-                        <option value="June">June</option>
-                        <option value="July">July</option>
-                        <option value="August">August</option>
-                        <option value="September">September</option>
-                        <option value="October">October</option>
-                        <option value="November">November</option>
-                        <option value="December">December</option>
-                        </select>
+                        <input 
+                            type="month" 
+                            v-model="monthFilter" 
+                            class="bg-gray-100 py-2 px-4 rounded-md"
+                            @change="filterByMonth"
+                        />
                     </div>
                 </div>
                 
                 <div class="overflow-x-auto pb-4">
                     <div class="min-w-full inline-block align-middle">
                         <div class="overflow-hidden">
-                            <table class="table-auto min-w-full rounded-xl">
+                            <table id="Attendance" class="table-auto min-w-full rounded-xl">
                                 <thead>
                                     <tr class="bg-gray-50">
                                         <th scope="col" class="p-5 text-left whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize min-w-[150px]"> Date </th>
@@ -63,7 +56,10 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-300 ">
-                                    <tr v-for="attendance in user.attendances" :key="attendance.id" class="bg-white transition-all duration-500 hover:bg-gray-50">
+                                    <tr v-if="filteredAttendances.length === 0">
+                                        <td colspan="4" class="text-center p-5 text-gray-500">No Attendance available.</td>
+                                    </tr>
+                                    <tr v-for="attendance in filteredAttendances" :key="attendance.id" class="bg-white transition-all duration-500 hover:bg-gray-50">
                                         <td class="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900">
                                             {{ formatDate(attendance.time_in) }}
                                         </td>
@@ -118,10 +114,11 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
 
 const props = defineProps({
     user: {
@@ -182,6 +179,17 @@ const closeUpdateModal = () => {
     };
 };
 
+const monthFilter = ref(new Date().toISOString().slice(0, 7)); // Default to current month (e.g., "2025-03")
+
+const filteredAttendances = computed(() => {
+    if (!props.user.attendances) return [];
+    
+    return props.user.attendances.filter(attendance => {
+        const entryMonth = new Date(attendance.time_in).toISOString().slice(0, 7); // Format as "YYYY-MM"
+        return entryMonth === monthFilter.value;
+    });
+});
+
 // Update attendance
 const updateAttendance = async () => {
     loading.value = true;
@@ -201,4 +209,37 @@ const updateAttendance = async () => {
         loading.value = false;
     }
 };
+
+const exportToExcel = () => {
+    const table = document.getElementById('Attendance');
+    
+    // Clone the table to manipulate it without affecting the original
+    const clonedTable = table.cloneNode(true);
+
+    // Remove the 'Action' column from the cloned table
+    const headers = clonedTable.querySelectorAll('thead th');
+    const bodyRows = clonedTable.querySelectorAll('tbody tr');
+
+    // Identify the 'Action' column index
+    let actionColumnIndex = -1;
+    headers.forEach((th, index) => {
+        if (th.textContent.trim() === 'Action') {
+            actionColumnIndex = index;
+            th.remove(); // Remove the header
+        }
+    });
+
+    // Remove the corresponding cells in each row
+    bodyRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells[actionColumnIndex]) {
+            cells[actionColumnIndex].remove();
+        }
+    });
+
+    // Export the modified table
+    const workbook = XLSX.utils.table_to_book(clonedTable);
+    XLSX.writeFile(workbook, 'Attendance_Report.xlsx');
+};
+
 </script>
