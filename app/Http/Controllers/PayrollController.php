@@ -146,7 +146,7 @@ class PayrollController extends Controller
         $basicSalary = $totalWorkdays * $ratePerDay;
         $overtimePay = $totalOvertime * ($user->salary?->overtime_rate ?? 50); // Default overtime rate
         $grossPay = $basicSalary + $overtimePay + $totalHolidayPay + $allowance;
-        $netPay = $grossPay - ($user->salary?->deductions ?? 100); // Default deduction
+        $netPay = $grossPay - ($user->salary?->deductions ); // Default deduction
     
         // Store Payroll Data
         Payroll::create([
@@ -156,7 +156,7 @@ class PayrollController extends Controller
             'overtime_pay' => $overtimePay,
             'holiday_pay' => $totalHolidayPay,
             'allowance' => $allowance,
-            'deductions' => $user->salary?->deductions ?? 100,
+            'deductions' => $user->salary?->deductions,
             'gross_pay' => $grossPay,
             'net_pay' => $netPay,
             'pay_period_start' => $startDate,

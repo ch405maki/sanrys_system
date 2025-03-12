@@ -19,7 +19,7 @@
             <div class="mt-4 bg-white rounded-lg p-2 mb-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Weekly Attendance Performance Chart</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <canvas ref="attendanceChartCanvas" class="h-[300px]"></canvas>
+                    <canvas ref="attendanceChartCanvas" class="h-[150px]"></canvas>
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -29,22 +29,25 @@
                     <div 
                         v-for="employee in recentEmployees" 
                         :key="employee.id"
-                        class="flex justify-between border-b py-2"
-                    >
+                        class="flex justify-between items-center border-b py-2"
+                        >
                         <div>
                             <p class="font-medium text-sm text-gray-800">{{ employee.name }}</p>
                             <p class="text-xs text-gray-500">{{ employee.position }}</p>
                         </div>
                         <div>
-                            <span :class="statusClass(employee.status)" class="py-1 px-3 rounded-full text-xs">
+                        <span 
+                                class="py-1 px-4 rounded-full text-xs font-medium text-white"
+                                :class="statusClass(employee.status)"
+                            >
                                 {{ employee.status }}
                             </span>
                         </div>
                     </div>
                 </div>
                 <!-- Compliance Submission Chart -->
-                <div class="p-4 bg-white rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-800">Compliance</h3>
+                <div class="p-4 bg-white rounded-lg ">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-8">Compliance</h3>
                     <canvas ref="complianceChartCanvas" class="h-[300px]"></canvas>
                 </div>
             </div>
@@ -60,29 +63,27 @@ import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
+const props = defineProps({
+    weeklyAttendanceData: Array,
+    recentEmployees: Array,
+    complianceData: Object
+});
+
+const statusClass = (status) => {
+    return {
+        'bg-green-500': status === 'active',
+        'bg-yellow-500': status === 'pending',
+        'bg-red-500': status === 'inactive',
+        'bg-gray-400': !['active', 'pending', 'inactive'].includes(status)
+    };
+};
+
+
 // Attendance Chart
 const attendanceChartCanvas = ref(null);
 
 // Compliance Chart
 const complianceChartCanvas = ref(null);
-
-// Sample Recent Employees
-const recentEmployees = ref([
-    { id: 1, name: 'Juan Dela Cruz', position: 'Software Engineer', status: 'Active' },
-    { id: 2, name: 'Maria Santos', position: 'HR Manager', status: 'On Leave' },
-    { id: 3, name: 'Pedro Lopez', position: 'Accountant', status: 'Active' },
-    { id: 4, name: 'Ana Reyes', position: 'IT Support', status: 'Resigned' },
-]);
-
-// Status Badge Class
-const statusClass = (status) => {
-    switch (status) {
-        case 'Active': return 'bg-green-100 text-green-700';
-        case 'On Leave': return 'bg-yellow-100 text-yellow-700';
-        case 'Resigned': return 'bg-red-100 text-red-700';
-        default: return 'bg-gray-100 text-gray-700';
-    }
-};
 
 onMounted(() => {
     // Attendance Chart
@@ -90,11 +91,11 @@ onMounted(() => {
     new Chart(ctxAttendance, {
         type: 'line',
         data: {
-            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+            labels: props.weeklyAttendanceData.map(data => data.week),
             datasets: [
                 {
                     label: 'Present',
-                    data: [5, 4, 5, 4, 5],
+                    data: props.weeklyAttendanceData.map(data => data.present),
                     backgroundColor: 'rgba(34, 197, 94, 0.2)',
                     borderColor: 'rgba(34, 197, 94, 1)',
                     tension: 0.3,
@@ -105,7 +106,7 @@ onMounted(() => {
                 },
                 {
                     label: 'Absent',
-                    data: [0, 1, 0, 1, 0],
+                    data: props.weeklyAttendanceData.map(data => data.absent),
                     backgroundColor: 'rgba(239, 68, 68, 0.2)',
                     borderColor: 'rgba(239, 68, 68, 1)',
                     tension: 0.3,
@@ -116,7 +117,7 @@ onMounted(() => {
                 },
                 {
                     label: 'Late',
-                    data: [1, 2, 1, 0, 1],
+                    data: props.weeklyAttendanceData.map(data => data.late),
                     backgroundColor: 'rgba(234, 179, 8, 0.2)',
                     borderColor: 'rgba(234, 179, 8, 1)',
                     tension: 0.3,
@@ -126,14 +127,6 @@ onMounted(() => {
                     fill: true,
                 }
             ]
-        },
-        options: {
-            maintainAspectRatio: false,
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true, title: { display: true, text: 'Days' } },
-                x: { title: { display: true, text: 'Weeks' } }
-            }
         }
     });
 
@@ -142,11 +135,13 @@ onMounted(() => {
     new Chart(ctxCompliance, {
         type: 'polarArea',
         data: {
-            labels: ['Submitted', 'Pending', 'Overdue'],
+            labels: ['Submitted', 'Pending'],
             datasets: [
                 {
-                    label: 'Compliance Submissions',
-                    data: [15, 5, 3],
+                    data: [
+                        props.complianceData.submitted,
+                        props.complianceData.pending,
+                    ],
                     backgroundColor: [
                         'rgba(34, 197, 94, 0.5)', // Green
                         'rgba(234, 179, 8, 0.5)', // Yellow
@@ -155,17 +150,6 @@ onMounted(() => {
                     borderWidth: 1
                 }
             ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'right' },
-                tooltip: {
-                    callbacks: {
-                        label: (context) => `${context.label}: ${context.raw}`
-                    }
-                }
-            }
         }
     });
 });
