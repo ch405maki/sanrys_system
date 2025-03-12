@@ -8,6 +8,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DeductionController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\DashboardController;
 
 use App\Models\Attendance;
 use Illuminate\Foundation\Application;
@@ -25,9 +26,10 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard/Index');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Dashboard
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
 
 // employee
 Route::middleware(['auth', 'verified'])->group(function () {
