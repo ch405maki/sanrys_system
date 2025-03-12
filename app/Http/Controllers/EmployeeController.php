@@ -189,7 +189,16 @@ class EmployeeController extends Controller
 
     public function show($id)
     {
-        $employee = User::with('profile')->find($id);
+        // Fetch the employee with all related data
+        $employee = User::with([
+            'profile',
+            'skills',
+            'educationalBackground',
+            'previousEmploymentRecords',
+            'references',
+            'emergencyContacts',
+            'governmentBenefits'
+        ])->find($id);
 
         if (!$employee) {
             return redirect()->route('employee.index')->with('error', 'Employee not found.');
@@ -202,7 +211,15 @@ class EmployeeController extends Controller
 
     public function edit($id)
     {
-        $employee = User::with('profile')->find($id);
+        $employee = User::with([
+            'profile',
+            'skills',
+            'educationalBackground',
+            'previousEmploymentRecords',
+            'references',
+            'emergencyContacts',
+            'governmentBenefits'
+        ])->find($id);
 
         if (!$employee) {
             return redirect()->route('employee.index')->with('error', 'Employee not found.');

@@ -1,81 +1,3 @@
-<script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import axios from 'axios';
-
-// Reactive state for form data
-const form = ref({
-    name: '',
-    email: '',
-    password: '',
-    profile_picture: null,
-    position: '',
-    branch: '',
-    age: '',
-    contact_number: '',
-    sex: '',
-    civil_status: '',
-    citizenship: '',
-    religion: '',
-    weight: '',
-    height: '',
-    date_of_birth: '',
-    place_of_birth: '',
-    present_address: '',
-    permanent_address: '',
-});
-
-const previewProfilePicture = ref('');
-const fileInput = ref(null); // Create a ref for the file input
-
-// Function to handle file upload
-const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        form.value.profile_picture = file;
-        previewProfilePicture.value = URL.createObjectURL(file);
-    }
-};
-
-// Function to trigger file selection
-const openFilePicker = () => {
-    fileInput.value.click();
-};
-
-// Reactive state for form errors
-const errors = ref({});
-
-// Function to submit the form
-const submitForm = async () => {
-    try {
-        const formData = new FormData();
-        for (const key in form.value) {
-            if (form.value[key] !== null) {
-                formData.append(key, form.value[key]);
-            }
-        }
-
-        const response = await axios.post('/api/employees', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-
-        if (response.status === 201) {
-            alert('Employee created successfully!');
-            window.location.href = route('employee.index');
-        }
-    } catch (error) {
-        if (error.response && error.response.status === 422) {
-            errors.value = error.response.data.errors;
-        } else {
-            alert('An error occurred. Please try again.');
-        }
-    }
-};
-</script>
-
 <template>
     <Head title="Documents" />
 
@@ -286,12 +208,555 @@ const submitForm = async () => {
                         </div>
                     </div>
 
+                    <!-- Skills -->
+                    <div class="mb-6 border-b py-8">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Skills and Other Qualifications:</label>
+                        <div v-for="(skill, index) in form.skills" :key="index" class="mb-4 rounded-lg">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <input
+                                    v-model="skill.skill_name"
+                                    placeholder="Skill Name"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                    v-model="skill.proficiency_level"
+                                    placeholder="Proficiency Level"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                    v-model="skill.description"
+                                    placeholder="Description"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <button
+                                type="button"
+                                @click="removeSkill(index)"
+                                class="mt-2 w-full md:w-auto px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                            >
+                                Remove Skill
+                            </button>
+                        </div>
+                        <button
+                            type="button"
+                            @click="addSkill"
+                            class="w-full md:w-auto px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        >
+                            Add Skill
+                        </button>
+                    </div>
+
+                    <!-- Educational Background -->
+                    <div class="mb-6 border-b py-8">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Educational Background:</label>
+                        <div class="space-y-4">
+                            <div class="rounded-lg">
+                                <h4 class="text-sm font-medium text-gray-600 mb-2">College</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <input
+                                        v-model="form.educational_background.college"
+                                        placeholder="College"
+                                        class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <input
+                                        v-model="form.educational_background.college_course"
+                                        placeholder="College Course"
+                                        class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <input
+                                        v-model="form.educational_background.college_school_year"
+                                        placeholder="College School Year"
+                                        class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+                            <div class=" rounded-lg">
+                                <h4 class="text-sm font-medium text-gray-600 mb-2">Secondary</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <input
+                                        v-model="form.educational_background.secondary"
+                                        placeholder="Secondary School"
+                                        class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <input
+                                        v-model="form.educational_background.secondary_course"
+                                        placeholder="Secondary Course"
+                                        class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <input
+                                        v-model="form.educational_background.secondary_school_year"
+                                        placeholder="Secondary School Year"
+                                        class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+                            <div class=" rounded-lg">
+                                <h4 class="text-sm font-medium text-gray-600 mb-2">Elementary</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <input
+                                        v-model="form.educational_background.elementary"
+                                        placeholder="Elementary School"
+                                        class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <input
+                                        v-model="form.educational_background.elementary_course"
+                                        placeholder="Elementary Course"
+                                        class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <input
+                                        v-model="form.educational_background.elementary_school_year"
+                                        placeholder="Elementary School Year"
+                                        class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Previous Employment Records -->
+                    <div class="mb-6 border-b py-8">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Previous Employment Records:</label>
+                        <div v-for="(record, index) in form.previous_employment_records" :key="index" class="mb-4  rounded-lg">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input
+                                    v-model="record.company_name"
+                                    placeholder="Company Name"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                    v-model="record.position"
+                                    placeholder="Position"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                    v-model="record.date_employed"
+                                    type="date"
+                                    placeholder="Date Employed"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                    v-model="record.salary"
+                                    placeholder="Salary"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                    v-model="record.reason_of_leaving"
+                                    placeholder="Reason of Leaving"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <button
+                                type="button"
+                                @click="removeEmploymentRecord(index)"
+                                class="mt-2 w-full md:w-auto px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                            >
+                                Remove Record
+                            </button>
+                        </div>
+                        <button
+                            type="button"
+                            @click="addEmploymentRecord"
+                            class="w-full md:w-auto px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        >
+                            Add Employment Record
+                        </button>
+                    </div>
+
+                    <!-- References -->
+                    <div class="mb-6 border-b py-8">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">References:</label>
+                        <div v-for="(reference, index) in form.references" :key="index" class="mb-4  rounded-lg">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input
+                                    v-model="reference.name"
+                                    placeholder="Name"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                    v-model="reference.contact"
+                                    placeholder="Contact"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                    v-model="reference.occupation"
+                                    placeholder="Occupation"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                    v-model="reference.relation"
+                                    placeholder="Relation"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <button
+                                type="button"
+                                @click="removeReference(index)"
+                                class="mt-2 w-full md:w-auto px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                            >
+                                Remove Reference
+                            </button>
+                        </div>
+                        <button
+                            type="button"
+                            @click="addReference"
+                            class="w-full md:w-auto px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        >
+                            Add Reference
+                        </button>
+                    </div>
+
+                    <!-- Emergency Contacts -->
+                    <div class="mb-6 border-b py-8">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Contacts:</label>
+                        <div v-for="(contact, index) in form.emergency_contacts" :key="index" class="mb-4  rounded-lg">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input
+                                    v-model="contact.name"
+                                    placeholder="Name"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                    v-model="contact.address"
+                                    placeholder="Address"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                    v-model="contact.contact"
+                                    placeholder="Contact"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                    v-model="contact.relation"
+                                    placeholder="Relation"
+                                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <button
+                                type="button"
+                                @click="removeEmergencyContact(index)"
+                                class="mt-2 w-full md:w-auto px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                            >
+                                Remove Contact
+                            </button>
+                        </div>
+                        <button
+                            type="button"
+                            @click="addEmergencyContact"
+                            class="w-full md:w-auto px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        >
+                            Add Emergency Contact
+                        </button>
+                    </div>
+
+                    <!-- Government Benefits -->
+                    <div class="mb-6 border-b py-8">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Government Benefits:</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input
+                                v-model="form.government_benefits.sss_no"
+                                placeholder="SSS No"
+                                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <input
+                                v-model="form.government_benefits.pag_ibig_no"
+                                placeholder="Pag-IBIG No"
+                                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <input
+                                v-model="form.government_benefits.philhealth_no"
+                                placeholder="PhilHealth No"
+                                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <input
+                                v-model="form.government_benefits.tin_no"
+                                placeholder="TIN No"
+                                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <input
+                                v-model="form.government_benefits.employee_no"
+                                placeholder="Employee No"
+                                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <input
+                                v-model="form.government_benefits.date_employed"
+                                type="date"
+                                placeholder="Date Employed"
+                                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                    </div>
+
                     <div class="mt-6 flex items-center justify-end gap-x-6">
                         <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
-                        <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save</button>
+                        <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            <i class="fa-solid fa-floppy-disk"></i> Save
+                        </button>
                     </div>
                 </form>
             </div>
         </main>
     </AuthenticatedLayout>
 </template>
+
+<script setup>
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import axios from 'axios';
+import { useToast } from 'vue-toastification';
+
+const toast = useToast(); // Initialize toast
+
+// Reactive state for form data
+const form = ref({
+    // User details
+    name: '',
+    email: '',
+    password: '',
+    profile_picture: null,
+
+    // Profile details
+    position: '',
+    branch: '',
+    age: '',
+    contact_number: '',
+    sex: '',
+    civil_status: '',
+    citizenship: '',
+    religion: '',
+    weight: '',
+    height: '',
+    date_of_birth: '',
+    place_of_birth: '',
+    present_address: '',
+    permanent_address: '',
+
+    // Skills (array of objects)
+    skills: [
+        {
+            skill_name: '',
+            proficiency_level: '',
+            description: '',
+        }
+    ],
+
+    // Educational Background (single object)
+    educational_background: {
+        college: '',
+        college_course: '',
+        college_school_year: '',
+        secondary: '',
+        secondary_course: '',
+        secondary_school_year: '',
+        elementary: '',
+        elementary_course: '',
+        elementary_school_year: '',
+    },
+
+    // Previous Employment Records (array of objects)
+    previous_employment_records: [
+        {
+            company_name: '',
+            position: '',
+            date_employed: '',
+            salary: '',
+            reason_of_leaving: '',
+        }
+    ],
+
+    // References (array of objects)
+    references: [
+        {
+            name: '',
+            contact: '',
+            occupation: '',
+            relation: '',
+        }
+    ],
+
+    // Emergency Contacts (array of objects)
+    emergency_contacts: [
+        {
+            name: '',
+            address: '',
+            contact: '',
+            relation: '',
+        }
+    ],
+
+    // Government Benefits (single object)
+    government_benefits: {
+        sss_no: '',
+        pag_ibig_no: '',
+        philhealth_no: '',
+        tin_no: '',
+        employee_no: '',
+        date_employed: '',
+    },
+});
+
+const previewProfilePicture = ref('');
+const fileInput = ref(null); // Create a ref for the file input
+
+// Function to handle file upload
+const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        form.value.profile_picture = file;
+        previewProfilePicture.value = URL.createObjectURL(file);
+    }
+};
+
+// Function to trigger file selection
+const openFilePicker = () => {
+    fileInput.value.click();
+};
+
+// Reactive state for form errors
+const errors = ref({});
+
+const addSkill = () => {
+    form.value.skills.push({
+        skill_name: '',
+        proficiency_level: '',
+        description: '',
+    });
+};
+
+const removeSkill = (index) => {
+    form.value.skills.splice(index, 1);
+};
+
+const addEmploymentRecord = () => {
+    form.value.previous_employment_records.push({
+        company_name: '',
+        position: '',
+        date_employed: '',
+        salary: '',
+        reason_of_leaving: '',
+    });
+};
+
+const removeEmploymentRecord = (index) => {
+    form.value.previous_employment_records.splice(index, 1);
+};
+
+const addReference = () => {
+    form.value.references.push({
+        name: '',
+        contact: '',
+        occupation: '',
+        relation: '',
+    });
+};
+
+const removeReference = (index) => {
+    form.value.references.splice(index, 1);
+};
+
+const addEmergencyContact = () => {
+    form.value.emergency_contacts.push({
+        name: '',
+        address: '',
+        contact: '',
+        relation: '',
+    });
+};
+
+const removeEmergencyContact = (index) => {
+    form.value.emergency_contacts.splice(index, 1);
+};
+
+const submitForm = async () => {
+    try {
+        const formData = new FormData();
+
+        // Append user and profile details
+        for (const key in form.value) {
+            if (key === 'skills' || key === 'previous_employment_records' || key === 'references' || key === 'emergency_contacts' || key === 'educational_background' || key === 'government_benefits') {
+                continue; // Skip nested objects/arrays for now
+            }
+            formData.append(key, form.value[key]);
+        }
+
+        // Append profile picture
+        if (form.value.profile_picture) {
+            formData.append('profile_picture', form.value.profile_picture);
+        }
+
+        // Append skills
+        form.value.skills.forEach((skill, index) => {
+            formData.append(`skills[${index}][skill_name]`, skill.skill_name);
+            formData.append(`skills[${index}][proficiency_level]`, skill.proficiency_level);
+            formData.append(`skills[${index}][description]`, skill.description);
+        });
+
+        // Append educational background
+        for (const key in form.value.educational_background) {
+            formData.append(`educational_background[${key}]`, form.value.educational_background[key]);
+        }
+
+        // Append previous employment records
+        form.value.previous_employment_records.forEach((record, index) => {
+            formData.append(`previous_employment_records[${index}][company_name]`, record.company_name);
+            formData.append(`previous_employment_records[${index}][position]`, record.position);
+            formData.append(`previous_employment_records[${index}][date_employed]`, record.date_employed);
+            formData.append(`previous_employment_records[${index}][salary]`, record.salary);
+            formData.append(`previous_employment_records[${index}][reason_of_leaving]`, record.reason_of_leaving);
+        });
+
+        // Append references
+        form.value.references.forEach((reference, index) => {
+            formData.append(`references[${index}][name]`, reference.name);
+            formData.append(`references[${index}][contact]`, reference.contact);
+            formData.append(`references[${index}][occupation]`, reference.occupation);
+            formData.append(`references[${index}][relation]`, reference.relation);
+        });
+
+        // Append emergency contacts
+        form.value.emergency_contacts.forEach((contact, index) => {
+            formData.append(`emergency_contacts[${index}][name]`, contact.name);
+            formData.append(`emergency_contacts[${index}][address]`, contact.address);
+            formData.append(`emergency_contacts[${index}][contact]`, contact.contact);
+            formData.append(`emergency_contacts[${index}][relation]`, contact.relation);
+        });
+
+        // Append government benefits
+        for (const key in form.value.government_benefits) {
+            formData.append(`government_benefits[${key}]`, form.value.government_benefits[key]);
+        }
+
+        // Send the request
+        const response = await axios.post('/api/employees', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+
+        if (response.status === 201) {
+            // Show success toast
+            toast.success('Employee created successfully!');
+
+            // Redirect after 3 seconds
+            setTimeout(() => {
+                window.location.href = route('employee.index');
+            }, 3000);
+        }
+    } catch (error) {
+        if (error.response && error.response.status === 422) {
+            errors.value = error.response.data.errors;
+            console.error('Validation errors:', errors.value);
+
+            // Show validation error toasts
+            for (const field in errors.value) {
+                toast.error(`${field}: ${errors.value[field].join(', ')}`);
+            }
+        } else {
+            // Show generic error toast
+            toast.error('An error occurred. Please try again.');
+            console.error('Error:', error);
+        }
+    }
+};
+</script>
+

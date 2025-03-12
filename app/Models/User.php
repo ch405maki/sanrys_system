@@ -79,7 +79,7 @@ class User extends Authenticatable
     }
     public function educationalBackground()
     {
-        return $this->hasMany(EducationalBackground::class);
+        return $this->hasOne(EducationalBackground::class);
     }
     public function previousEmploymentRecords()
     {
