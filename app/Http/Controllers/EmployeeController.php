@@ -232,7 +232,15 @@ class EmployeeController extends Controller
 
     public function update(Request $request, $id)
     {
-        $employee = User::with('profile')->find($id);
+        $employee = User::with([
+            'profile',
+            'skills',
+            'educationalBackground',
+            'previousEmploymentRecords',
+            'references',
+            'emergencyContacts',
+            'governmentBenefits'
+        ])->find($id);
 
         if (!$employee) {
             return redirect()->route('employee.index')->with('error', 'Employee not found.');
@@ -240,8 +248,11 @@ class EmployeeController extends Controller
 
         // Validate request data
         $request->validate([
+            // User details
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $employee->id,
+
+            // Profile details
             'position' => 'required|string',
             'branch' => 'required|string',
             'contact_number' => 'nullable|string|max:20',
@@ -256,13 +267,114 @@ class EmployeeController extends Controller
             'place_of_birth' => 'nullable|string|max:255',
             'present_address' => 'nullable|string|max:255',
             'permanent_address' => 'nullable|string|max:255',
+
+            // Skills
+            'skills' => 'nullable|array',
+            'skills.*.skill_name' => 'required|string|max:255',
+            'skills.*.proficiency_level' => 'nullable|string|max:255',
+            'skills.*.description' => 'nullable|string',
+
+            // Educational Background
+            'educational_background' => 'nullable|array',
+            'educational_background.college' => 'nullable|string|max:255',
+            'educational_background.college_course' => 'nullable|string|max:255',
+            'educational_background.college_school_year' => 'nullable|string|max:255',
+            'educational_background.secondary' => 'nullable|string|max:255',
+            'educational_background.secondary_course' => 'nullable|string|max:255',
+            'educational_background.secondary_school_year' => 'nullable|string|max:255',
+            'educational_background.elementary' => 'nullable|string|max:255',
+            'educational_background.elementary_course' => 'nullable|string|max:255',
+            'educational_background.elementary_school_year' => 'nullable|string|max:255',
+
+            // Previous Employment Records
+            'previous_employment_records' => 'nullable|array',
+            'previous_employment_records.*.company_name' => 'required|string|max:255',
+            'previous_employment_records.*.position' => 'required|string|max:255',
+            'previous_employment_records.*.date_employed' => 'required|date',
+            'previous_employment_records.*.salary' => 'required|numeric',
+            'previous_employment_records.*.reason_of_leaving' => 'required|string|max:255',
+
+            // References
+            'references' => 'nullable|array',
+            'references.*.name' => 'required|string|max:255',
+            'references.*.contact' => 'required|string|max:20',
+            'references.*.occupation' => 'required|string|max:255',
+            'references.*.relation' => 'required|string|max:255',
+
+            // Emergency Contacts
+            'emergency_contacts' => 'nullable|array',
+            'emergency_contacts.*.name' => 'required|string|max:255',
+            'emergency_contacts.*.address' => 'required|string|max:255',
+            'emergency_contacts.*.contact' => 'required|string|max:20',
+            'emergency_contacts.*.relation' => 'required|string|max:255',
+
+            // Government Benefits
+            'government_benefits' => 'nullable|array',
+            'government_benefits.sss_no' => 'nullable|string|max:255',
+            'government_benefits.pag_ibig_no' => 'nullable|string|max:255',
+            'government_benefits.philhealth_no' => 'nullable|string|max:255',
+            'government_benefits.tin_no' => 'nullable|string|max:255',
+            'government_benefits.employee_no' => 'nullable|string|max:255',
+            'government_benefits.date_employed' => 'nullable|date',
         ]);
 
         // Update employee details
         $employee->update($request->only('name', 'email'));
 
         // Update profile details
-        $employee->profile->update($request->only($employee->profile->getFillable()));
+        $employee->profile->update($request->only([
+            'position', 'branch', 'contact_number', 'age', 'sex', 'civil_status',
+            'citizenship', 'religion', 'weight', 'height', 'date_of_birth',
+            'place_of_birth', 'present_address', 'permanent_address'
+        ]));
+
+        // Update skills
+        if ($request->has('skills')) {
+            $employee->skills()->delete(); // Delete existing skills
+            foreach ($request->skills as $skill) {
+                $employee->skills()->create($skill);
+            }
+        }
+
+        // Update educational background
+        if ($request->has('educational_background')) {
+            $employee->educationalBackground()->updateOrCreate(
+                ['user_id' => $employee->id],
+                $request->educational_background
+            );
+        }
+
+        // Update previous employment records
+        if ($request->has('previous_employment_records')) {
+            $employee->previousEmploymentRecords()->delete(); // Delete existing records
+            foreach ($request->previous_employment_records as $record) {
+                $employee->previousEmploymentRecords()->create($record);
+            }
+        }
+
+        // Update references
+        if ($request->has('references')) {
+            $employee->references()->delete(); // Delete existing references
+            foreach ($request->references as $reference) {
+                $employee->references()->create($reference);
+            }
+        }
+
+        // Update emergency contacts
+        if ($request->has('emergency_contacts')) {
+            $employee->emergencyContacts()->delete(); // Delete existing contacts
+            foreach ($request->emergency_contacts as $contact) {
+                $employee->emergencyContacts()->create($contact);
+            }
+        }
+
+        // Update government benefits
+        if ($request->has('government_benefits')) {
+            $employee->governmentBenefits()->updateOrCreate(
+                ['user_id' => $employee->id],
+                $request->government_benefits
+            );
+        }
 
         return redirect()->route('employee.show', $employee->id)->with('success', 'Employee updated successfully!');
     }
