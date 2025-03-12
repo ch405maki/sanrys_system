@@ -144,10 +144,14 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import axios from 'axios';
+import { useToast } from 'vue-toastification';
 
-const props = defineProps ({
-    user: {type: Array},
-})
+const toast = useToast();
+
+const props = defineProps({
+    user: { type: Array },
+});
+
 // Reactive state to control modal visibility
 const isUploadModalOpen = ref(false);
 
@@ -230,17 +234,19 @@ const uploadDocument = async () => {
         });
 
         // Handle success
-        message.value = response.data.message;
+        toast.success('Document uploaded successfully!', { timeout: 3000 });
+
         console.log('Document uploaded successfully:', response.data.document);
 
-        // Clear the form and close the modal after a short delay
+        // Wait 3 seconds before closing the modal
         setTimeout(() => {
             resetForm();
             closeUploadModal();
-        }, 2000); // 2 seconds delay
+            window.location.reload(); // Refresh the page to reflect changes
+        }, 3000);
     } catch (err) {
         // Handle error
-        error.value = err.response?.data?.errors || 'An error occurred while uploading the document.';
+        toast.error(err.response?.data?.errors || 'An error occurred while uploading the document.', { timeout: 3000 });
         console.error('Error uploading document:', err);
     } finally {
         isLoading.value = false;
@@ -253,13 +259,16 @@ const deleteDocument = async (documentId) => {
             // Call the delete API
             await axios.delete(`/api/documents/${documentId}`);
 
-            // Remove the document from the list
-            filteredDocuments.value = filteredDocuments.value.filter(document => document.id !== documentId);
+            // Show success toast
+            toast.success('Document deleted successfully!', { timeout: 3000 });
 
-            alert('Document deleted successfully!');
+            // Wait 3 seconds before refreshing the page
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
         } catch (error) {
             console.error('Error deleting document:', error);
-            alert('Failed to delete document. Please try again.');
+            toast.error('Failed to delete document. Please try again.', { timeout: 3000 });
         }
     }
 };

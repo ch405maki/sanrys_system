@@ -44,4 +44,34 @@ class DeductionController extends Controller
 
         return redirect()->back()->with('success', 'Deductions successfully saved!');
     }
+
+    // Update deduction
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'pag_ibig' => 'required|numeric|min:0',
+            'sss' => 'required|numeric|min:0',
+            'philhealth' => 'required|numeric|min:0',
+            'maxicare' => 'required|numeric|min:0',
+        ]);
+
+        $deduction = Deduction::findOrFail($id);
+        $deduction->update($request->all());
+
+        return response()->json([
+            'message' => 'Deduction updated successfully!',
+            'deduction' => $deduction
+        ]);
+    }
+
+    // Delete deduction
+    public function destroy($id)
+    {
+        $deduction = Deduction::findOrFail($id);
+        $deduction->delete();
+
+        return response()->json([
+            'message' => 'Deduction deleted successfully!'
+        ]);
+    }
 }

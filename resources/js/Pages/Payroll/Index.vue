@@ -105,6 +105,9 @@ import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import { useToast } from 'vue-toastification';
+
+const toast = useToast();
 
 const props = defineProps({
     users: { type: Array, required: true }
@@ -115,10 +118,10 @@ const startDate = ref('');
 const endDate = ref('');
 const payrollData = ref(null); // To store the generated payroll data
 
-// Function to generate payroll
+// Function to generate payroll for a single user
 const generatePayroll = async (userId) => {
     if (!startDate.value || !endDate.value) {
-        alert('Please enter both start and end dates.');
+        toast.error('Please enter both start and end dates.');
         return;
     }
 
@@ -129,16 +132,17 @@ const generatePayroll = async (userId) => {
         });
 
         payrollData.value = response.data;
-        alert('Payroll generated successfully!');
+        toast.success('Payroll generated successfully!');
     } catch (error) {
         console.error('Error generating payroll:', error.response?.data?.message || error.message);
-        alert('Failed to generate payroll. Please try again.');
+        toast.error('Failed to generate payroll. Please try again.');
     }
 };
 
+// Function to generate payroll for all users
 const generatePayrollForAll = async () => {
     if (!startDate.value || !endDate.value) {
-        alert('Please enter both start and end dates.');
+        toast.error('Please enter both start and end dates.');
         return;
     }
 
@@ -149,11 +153,10 @@ const generatePayrollForAll = async () => {
         });
 
         payrollData.value = response.data.payrollDetails;
-        alert('Payroll for all users generated successfully!');
+        toast.success('Payroll for all users generated successfully!');
     } catch (error) {
         console.error('Error generating payroll:', error.response?.data?.message || error.message);
-        alert('Failed to generate payroll. Please try again.');
+        toast.error('Failed to generate payroll. Please try again.');
     }
 };
-
 </script>

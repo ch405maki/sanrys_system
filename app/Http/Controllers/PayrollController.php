@@ -38,7 +38,8 @@ class PayrollController extends Controller
         $endDate = $request->input('endDate');
         $cutOffPeriod = $this->getCutOffPeriod($startDate, $endDate);
 
-        $users = User::with(['attendances', 'salary'])->get();
+        // Fetch users with their attendances, salary, and deductions
+        $users = User::with(['attendances', 'salary', 'deduction'])->get();
         $payrollDetails = [];
 
         foreach ($users as $user) {
@@ -50,10 +51,18 @@ class PayrollController extends Controller
             $allowance = $user->salary?->allowance ?? 0;
             $monthlyRate = $user->salary?->monthly_rate ?? 0;
 
+            // Calculate basic salary and gross pay
             $basicSalary = $totalWorkdays * $ratePerDay;
             $grossPay = $basicSalary + $allowance;
-            $netPay = $grossPay - 100; // Example deduction
 
+            // Fetch deductions for the user
+            $deductions = $user->deduction ?? null;
+            $totalDeductions = $deductions ? ($deductions->pag_ibig + $deductions->sss + $deductions->philhealth + $deductions->maxicare) : 0;
+
+            // Calculate net pay
+            $netPay = $grossPay - $totalDeductions;
+
+            // Create payroll record
             Payroll::create([
                 'user_id' => $user->id,
                 'rate_per_day' => $ratePerDay,
@@ -66,6 +75,7 @@ class PayrollController extends Controller
                 'pay_period_end' => $endDate,
                 'total_workdays' => $totalWorkdays,
                 'cut_off_period' => $cutOffPeriod,
+                'deductions' => $totalDeductions, // Save total deductions
             ]);
 
             $payrollDetails[] = [
@@ -77,12 +87,13 @@ class PayrollController extends Controller
                 'gross_pay' => $grossPay,
                 'net_pay' => $netPay,
                 'cut_off_period' => $cutOffPeriod,
+                'deductions' => $totalDeductions, // Include deductions in response
             ];
         }
 
         return response()->json([
             'message' => 'Payroll generated for all users successfully!',
-            'payrollDetails' => $payrollDetails
+            'payrollDetails' => $payrollDetails,
         ]);
     }
 
@@ -94,60 +105,66 @@ class PayrollController extends Controller
             'startDate' => 'required|date',
             'endDate' => 'required|date|after_or_equal:startDate',
         ]);
-    
+
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
-    
+
         // Determine the cut-off period
         $cutOffPeriod = $this->getCutOffPeriod($startDate, $endDate);
-    
-        // Fetch the user with their attendances and salary
-        $user = User::with(['attendances', 'salary'])->findOrFail($userId);
-    
+
+        // Fetch the user with their attendances, salary, and deductions
+        $user = User::with(['attendances', 'salary', 'deduction'])->findOrFail($userId);
+
         // Fetch attendance records within the pay period
         $attendances = $user->attendances()
             ->whereBetween('time_in', [$startDate, $endDate])
             ->get();
-    
+
         // Calculate total workdays
         $totalWorkdays = $attendances->count();
-    
+
         // Get salary details from the user's salary record
         $ratePerDay = $user->salary?->rate_per_day ?? 0;
         $allowance = $user->salary?->allowance ?? 0;
         $monthlyRate = $user->salary?->monthly_rate ?? 0;
-    
+
         // Calculate overtime and holiday pay
         $totalOvertime = 0;
         $totalHolidayPay = 0;
-    
+
         // Define public holidays
         $holidays = ['2025-02-25', '2025-04-09']; // Add more dates
-    
+
         foreach ($attendances as $attendance) {
             $timeIn = Carbon::parse($attendance->time_in);
             $timeOut = Carbon::parse($attendance->time_out);
             $workDate = $timeIn->toDateString();
-    
+
             $workHours = $timeIn->diffInHours($timeOut);
-    
+
             // Check if the work date is a holiday
             if (in_array($workDate, $holidays)) {
                 $totalHolidayPay += $ratePerDay * 2; // Double pay on holidays
             }
-    
+
             // Calculate overtime (if worked more than 8 hours)
             if ($workHours > 8) {
                 $totalOvertime += ($workHours - 8);
             }
         }
-    
+
         // Compute payroll amounts
         $basicSalary = $totalWorkdays * $ratePerDay;
         $overtimePay = $totalOvertime * ($user->salary?->overtime_rate ?? 50); // Default overtime rate
         $grossPay = $basicSalary + $overtimePay + $totalHolidayPay + $allowance;
-        $netPay = $grossPay - ($user->salary?->deductions ); // Default deduction
-    
+
+        // Fetch deductions for the user
+        $deductions = $user->deduction ?? null;
+        $totalDeductions = $deductions ? ($deductions->pag_ibig + $deductions->sss + $deductions->philhealth + $deductions->maxicare) : 0;
+
+        // Calculate net pay
+        $netPay = $grossPay - $totalDeductions;
+
         // Store Payroll Data
         Payroll::create([
             'user_id' => $user->id,
@@ -156,7 +173,7 @@ class PayrollController extends Controller
             'overtime_pay' => $overtimePay,
             'holiday_pay' => $totalHolidayPay,
             'allowance' => $allowance,
-            'deductions' => $user->salary?->deductions,
+            'deductions' => $totalDeductions, // Save total deductions
             'gross_pay' => $grossPay,
             'net_pay' => $netPay,
             'pay_period_start' => $startDate,
@@ -164,7 +181,7 @@ class PayrollController extends Controller
             'cut_off_period' => $cutOffPeriod,
             'total_workdays' => $totalWorkdays,
         ]);
-    
+
         // Return the payroll details
         return response()->json([
             'message' => 'Payroll generated successfully!',
@@ -176,8 +193,10 @@ class PayrollController extends Controller
             'gross_pay' => $grossPay,
             'net_pay' => $netPay,
             'cut_off_period' => $cutOffPeriod,
+            'deductions' => $totalDeductions, // Include deductions in response
         ]);
     }
+
     private function getCutOffPeriod($startDate, $endDate)
     {
         $startDay = Carbon::parse($startDate)->day;

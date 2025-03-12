@@ -42,6 +42,10 @@ Route::delete('/documents/{id}', [DocumentController::class, 'destroy']);
 
 // Deduction
 Route::post('/deductions/store', [DeductionController::class, 'store'])->name('deductions.store');
+Route::put('/deductions/{id}', [DeductionController::class, 'update']); 
+Route::delete('/deductions/{id}', [DeductionController::class, 'destroy']); 
 
 // salary
 Route::post('/salaries/store', [SalaryController::class, 'store'])->name('salaries.store'); 
+Route::put('/salaries/{id}', [SalaryController::class, 'update']);
+Route::delete('/salaries/{id}', [SalaryController::class, 'destroy']);

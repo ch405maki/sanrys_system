@@ -57,4 +57,30 @@ class SalaryController extends Controller
 
         return response()->json(['message' => 'Salary details saved successfully!']);
     }
+
+    // Update Salary
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'rate_per_day' => 'required|numeric|min:0',
+            'overtime_rate' => 'required|numeric|min:0',
+            'holiday_rate' => 'required|numeric|min:0',
+            'allowance' => 'required|numeric|min:0',
+            'monthly_rate' => 'required|numeric|min:0',
+        ]);
+
+        $salary = Salary::findOrFail($id);
+        $salary->update($request->all());
+
+        return response()->json(['message' => 'Salary updated successfully!']);
+    }
+
+    // Delete Salary
+    public function destroy($id)
+    {
+        $salary = Salary::findOrFail($id);
+        $salary->delete();
+
+        return response()->json(['message' => 'Salary deleted successfully!']);
+    }
 }

@@ -135,17 +135,14 @@ onMounted(() => {
     new Chart(ctxCompliance, {
         type: 'polarArea',
         data: {
-            labels: ['Submitted', 'Pending'],
+            labels: ['Submitted'],
             datasets: [
                 {
                     data: [
                         props.complianceData.submitted,
-                        props.complianceData.pending,
                     ],
                     backgroundColor: [
-                        'rgba(34, 197, 94, 0.5)', // Green
-                        'rgba(234, 179, 8, 0.5)', // Yellow
-                        'rgba(239, 68, 68, 0.5)'  // Red
+                        'rgba(34, 197, 94, 0.5)', // Green  
                     ],
                     borderWidth: 1
                 }
