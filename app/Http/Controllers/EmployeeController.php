@@ -112,7 +112,6 @@ class EmployeeController extends Controller
         ]);
     }
 
-
     public function update(Request $request, $id)
     {
         $employee = User::with('profile')->find($id);

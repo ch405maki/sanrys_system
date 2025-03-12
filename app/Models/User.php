@@ -65,14 +65,36 @@ class User extends Authenticatable
     {
         return $this->hasOne(Salary::class);
     }
-
     public function deductions()
     {
         return $this->hasOne(Deduction::class);
     }
-
     public function deduction()
     {
         return $this->hasOne(Deduction::class);
+    }
+    public function skills()
+    {
+        return $this->hasMany(Skill::class);
+    }
+    public function educationalBackgrounds()
+    {
+        return $this->hasMany(EducationalBackground::class);
+    }
+    public function previousEmploymentRecords()
+    {
+        return $this->hasMany(PreviousEmploymentRecord::class);
+    }
+    public function references()
+    {
+        return $this->hasMany(Reference::class);
+    }
+    public function emergencyContacts()
+    {
+        return $this->hasMany(EmergencyContact::class);
+    }
+    public function governmentBenefits()
+    {
+        return $this->hasOne(GovernmentBenefit::class);
     }
 }

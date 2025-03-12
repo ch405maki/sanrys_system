@@ -10,6 +10,12 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DeductionController;
 use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\SkillController;
+use App\Http\Controllers\EducationalBackgroundController;
+use App\Http\Controllers\PreviousEmploymentRecordController;
+use App\Http\Controllers\ReferenceController;
+use App\Http\Controllers\EmergencyContactController;
+use App\Http\Controllers\GovernmentBenefitController;
 
 Route::get('/user/profile', [ProfileController::class, 'getProfile'])->middleware('auth');
 
@@ -45,7 +51,32 @@ Route::post('/deductions/store', [DeductionController::class, 'store'])->name('d
 Route::put('/deductions/{id}', [DeductionController::class, 'update']); 
 Route::delete('/deductions/{id}', [DeductionController::class, 'destroy']); 
 
-// salary
+// Salary
 Route::post('/salaries/store', [SalaryController::class, 'store'])->name('salaries.store'); 
 Route::put('/salaries/{id}', [SalaryController::class, 'update']);
 Route::delete('/salaries/{id}', [SalaryController::class, 'destroy']);
+
+
+// Personal Info
+// Skills
+Route::get('/skills', [SkillController::class, 'index']); // Get all skills
+Route::post('/skills', [SkillController::class, 'store']); // Store a new skill
+
+// Educational
+Route::get('/educations', [EducationalBackgroundController::class, 'index']);
+Route::post('/educations', [EducationalBackgroundController::class, 'store']);
+Route::get('/educations/{id}', [EducationalBackgroundController::class, 'show']);
+Route::put('/educations/{id}', [EducationalBackgroundController::class, 'update']);
+Route::delete('/educations/{id}', [EducationalBackgroundController::class, 'destroy']);
+
+Route::prefix('employment-records')->group(function () {
+    Route::get('/', [PreviousEmploymentRecordController::class, 'index']);
+    Route::post('/', [PreviousEmploymentRecordController::class, 'store']);
+    Route::get('/{id}', [PreviousEmploymentRecordController::class, 'show']);
+    Route::put('/{id}', [PreviousEmploymentRecordController::class, 'update']);
+    Route::delete('/{id}', [PreviousEmploymentRecordController::class, 'destroy']);
+});
+
+Route::apiResource('references', ReferenceController::class);
+Route::apiResource('emergency-contacts', EmergencyContactController::class);
+Route::apiResource('government-benefits', GovernmentBenefitController::class);
