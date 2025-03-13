@@ -149,7 +149,7 @@ import { useToast } from 'vue-toastification';
 const toast = useToast();
 
 const props = defineProps({
-    user: { type: Array },
+    user: { type: Object }, // Ensure this is an object, not an array
 });
 
 // Reactive state to control modal visibility
@@ -183,7 +183,7 @@ const filteredDocuments = computed(() => {
 
 // Form data
 const form = ref({
-    user_id: 1,
+    user_id: props.user.id, // Use the authenticated user's ID
     document_name: '',
     description: '',
     document_type: '',
@@ -203,7 +203,7 @@ const onFileChange = (event) => {
 // Reset the form
 const resetForm = () => {
     form.value = {
-        user_id: 1,
+        user_id: props.user.id, // Reset to the authenticated user's ID
         document_name: '',
         description: '',
         document_type: 'ID',
@@ -220,7 +220,7 @@ const uploadDocument = async () => {
     message.value = '';
 
     const formData = new FormData();
-    formData.append('user_id', form.value.user_id);
+    formData.append('user_id', form.value.user_id); // Include the user_id
     formData.append('document_name', form.value.document_name);
     formData.append('description', form.value.description);
     formData.append('document_type', form.value.document_type);
