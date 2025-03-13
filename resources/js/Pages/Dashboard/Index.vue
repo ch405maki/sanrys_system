@@ -5,7 +5,7 @@
         <template #header>
             <div class="flex justify-between">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Hi, <span class="text-xl font-semibold text-green-800">Administrator</span>
+                    Hi, <span class="text-xl font-semibold text-green-800">{{ user.name }}</span>
                 </h2>
                 <div>
                     <span class="text-xl font-normal text-green-800">/Dashboard</span>
@@ -66,7 +66,8 @@ Chart.register(...registerables);
 const props = defineProps({
     weeklyAttendanceData: Array,
     recentEmployees: Array,
-    complianceData: Object
+    complianceData: Object,
+    user: Object
 });
 
 const statusClass = (status) => {

@@ -35,6 +35,7 @@ class EmployeeController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'role' => 'required|string|max:255',
             'password' => 'required|string|min:8',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'age' => 'nullable|integer',
@@ -111,6 +112,7 @@ class EmployeeController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'role' => $request->role,
             'password' => Hash::make($request->password),
         ]);
 
@@ -187,6 +189,28 @@ class EmployeeController extends Controller
 
     // End of Store
 
+    public function updateStatus(Request $request, $id)
+    {
+        // Validate the request
+        $request->validate([
+            'status' => 'required|in:active,inactive,suspended', // Ensure the status is valid
+        ]);
+    
+        // Find the user (employee)
+        $user = User::find($id);
+    
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    
+        // Update the status
+        $user->status = $request->status;
+        $user->save();
+    
+        return response()->json(['message' => 'User status updated successfully'], 200);
+    }
+
+
     public function show($id)
     {
         // Fetch the employee with all related data
@@ -251,6 +275,7 @@ class EmployeeController extends Controller
             // User details
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $employee->id,
+            'role' => 'required|string|max:255',
 
             // Profile details
             'position' => 'required|string',
@@ -319,7 +344,7 @@ class EmployeeController extends Controller
         ]);
 
         // Update employee details
-        $employee->update($request->only('name', 'email'));
+        $employee->update($request->only('name', 'email', 'role'));
 
         // Update profile details
         $employee->profile->update($request->only([

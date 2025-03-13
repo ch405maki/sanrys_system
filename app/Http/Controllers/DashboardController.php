@@ -37,10 +37,13 @@ class DashboardController extends Controller
             'overdue' => Document::where('status', 'Overdue')->count(),
         ];
 
+        $user = auth()->user();
+
         return Inertia::render('Dashboard/Index', [
             'weeklyAttendanceData' => $weeklyAttendanceData,
             'recentEmployees' => $recentEmployees,
-            'complianceData' => $complianceData
+            'complianceData' => $complianceData,
+            'user' => $user,
         ]);
     }
 

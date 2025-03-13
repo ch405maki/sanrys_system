@@ -78,6 +78,17 @@
                                         <p v-if="errors.email" class="mt-2 text-sm text-red-600">{{ errors.email[0] }}</p>
                                     </div>
                                 </div>
+                                <!-- Role -->
+                                <div class="sm:col-span-2">
+                                    <label for="role" class="block text-sm font-medium leading-6 text-gray-900">Role</label>
+                                    <div class="mt-2">
+                                        <select id="role" v-model="form.role" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                            <option value="administrator">Administrator</option>
+                                            <option value="staff">Staff</option>
+                                        </select>
+                                        <p v-if="errors.role" class="mt-2 text-sm text-red-600">{{ errors.role[0] }}</p>
+                                    </div>
+                                </div>
 
                                 <!-- Password -->
                                 <div class="sm:col-span-4">
@@ -512,6 +523,7 @@ const form = ref({
     // User details
     name: '',
     email: '',
+    role: '',
     password: '',
     profile_picture: null,
 
