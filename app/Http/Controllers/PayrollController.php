@@ -57,7 +57,12 @@ class PayrollController extends Controller
 
             // Fetch deductions for the user
             $deductions = $user->deduction ?? null;
-            $totalDeductions = $deductions ? ($deductions->pag_ibig + $deductions->sss + $deductions->philhealth + $deductions->maxicare) : 0;
+
+            // Apply deductions only during the second cut-off period (16th to end of month)
+            $totalDeductions = 0;
+            if (strpos($cutOffPeriod, '16') === 0) { // Check if it's the second cut-off period
+                $totalDeductions = $deductions ? ($deductions->pag_ibig + $deductions->sss + $deductions->philhealth + $deductions->maxicare) : 0;
+            }
 
             // Calculate net pay
             $netPay = $grossPay - $totalDeductions;
@@ -160,7 +165,12 @@ class PayrollController extends Controller
 
         // Fetch deductions for the user
         $deductions = $user->deduction ?? null;
-        $totalDeductions = $deductions ? ($deductions->pag_ibig + $deductions->sss + $deductions->philhealth + $deductions->maxicare) : 0;
+
+        // Apply deductions only during the second cut-off period (16th to end of month)
+        $totalDeductions = 0;
+        if (strpos($cutOffPeriod, '16') === 0) { // Check if it's the second cut-off period
+            $totalDeductions = $deductions ? ($deductions->pag_ibig + $deductions->sss + $deductions->philhealth + $deductions->maxicare) : 0;
+        }
 
         // Calculate net pay
         $netPay = $grossPay - $totalDeductions;

@@ -79,19 +79,39 @@
                 </div>
 
                 <!-- Display Generated Payroll Data -->
-                <div v-if="payrollData && payrollData.length" class="mt-8 bg-gray-100 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold mb-2">Generated Payroll Details</h3>
-                    <ul v-for="payroll in payrollData" :key="payroll.user">
-                        <li><strong>User:</strong> {{ payroll.user }}</li>
-                        <li><strong>Total Workdays:</strong> {{ payroll.total_workdays }}</li>
-                        <li><strong>Cut-off Period:</strong> {{ payroll.cut_off_period }}</li>
-                        <li><strong>Basic Salary:</strong> {{ payroll.basic_salary }}</li>
-                        <li><strong>Overtime Pay:</strong> {{ payroll.overtime_pay }}</li>
-                        <li><strong>Holiday Pay:</strong> {{ payroll.holiday_pay }}</li>
-                        <li><strong>Gross Pay:</strong> {{ payroll.gross_pay }}</li>
-                        <li><strong>Net Pay:</strong> {{ payroll.net_pay }}</li>
-                        <hr class="my-2">
-                    </ul>
+                <div v-if="payrollData && payrollData.length" class="mt-8 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-4">Generated Payroll Details</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200">
+                            <!-- Table Header -->
+                            <thead class="bg-green-100">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">User</th>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Workdays</th>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Cut-off Period</th>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Basic Salary</th>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Overtime Pay</th>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Holiday Pay</th>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Gross Pay</th>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Net Pay</th>
+                                </tr>
+                            </thead>
+
+                            <!-- Table Body -->
+                            <tbody class="divide-y divide-gray-200">
+                                <tr v-for="payroll in payrollData" :key="payroll.user" class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 text-sm text-gray-900">{{ payroll.user }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">{{ payroll.total_workdays }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">{{ payroll.cut_off_period }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">{{ payroll.basic_salary }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">{{ payroll.overtime_pay }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">{{ payroll.holiday_pay }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">{{ payroll.gross_pay }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">{{ payroll.net_pay }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
