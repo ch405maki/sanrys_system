@@ -1,5 +1,5 @@
 <template>
-    <aside class="hidden w-64 bg-white md:block min-h-screen">
+    <aside class="hidden w-64 bg-white md:block min-h-screen overflow-y-auto scrollbar-hide">
         <!-- Logo Section -->
         <div class="py-3 uppercase text-green-800 text-center tracking-widest mt-4 mb-8">
             <a href="/" class="">
@@ -300,8 +300,20 @@ const { props } = usePage();
 const user = props.auth.user;
 </script>
 
+
 <style scoped>
 .rotate-180 {
     transform: rotate(180deg);
+}
+
+/* Hide scrollbar for Chrome, Safari, and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge, and Firefox */
+.scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }
 </style>
