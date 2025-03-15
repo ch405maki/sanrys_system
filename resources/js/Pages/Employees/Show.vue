@@ -31,8 +31,8 @@
                                 </div>
                                 <h3 class="mt-4 text-xl font-semibold text-gray-800">{{ employee.name }}</h3>
                                 <p class="text-sm text-gray-500">Position: {{ employee.profile.position }}</p>
-                                <p class="text-sm text-gray-500">Employee No: {{ employee.government_benefits.employee_no }}</p>
-                                <p class="text-sm text-gray-500">Employment Date: {{ employee.government_benefits.date_employed }}</p>
+                                <p class="text-sm text-gray-500">Employee No: {{ employee.government_benefits?.employee_no || 'No Employee Id' }}</p>
+                                <p class="text-sm text-gray-500">Employment Date: {{ employee.government_benefits?.date_employed ||  'No Employment Date'}}</p>
                             </div>
                                                 
 
