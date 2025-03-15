@@ -16,6 +16,7 @@ use App\Http\Controllers\PreviousEmploymentRecordController;
 use App\Http\Controllers\ReferenceController;
 use App\Http\Controllers\EmergencyContactController;
 use App\Http\Controllers\GovernmentBenefitController;
+use App\Http\Controllers\ScheduleController;
 
 Route::get('/user/profile', [ProfileController::class, 'getProfile'])->middleware('auth');
 
@@ -81,3 +82,8 @@ Route::prefix('employment-records')->group(function () {
 Route::apiResource('references', ReferenceController::class);
 Route::apiResource('emergency-contacts', EmergencyContactController::class);
 Route::apiResource('government-benefits', GovernmentBenefitController::class);
+
+
+Route::post('/schedules', [ScheduleController::class, 'store']); // Store a new schedule
+Route::get('/users/{userId}/schedules', [ScheduleController::class, 'show']); // Get schedules for a user
+Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy']);

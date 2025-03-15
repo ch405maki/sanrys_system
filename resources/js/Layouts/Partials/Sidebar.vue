@@ -33,6 +33,10 @@
                             <a href="/employee" class="w-full">Employee List</a>
                         </li>
                         <li class="py-2 pl-8 cursor-pointer hover:text-gray-900 flex items-center">
+                            <i class="fa-solid fa-list w-5 text-center mr-2"></i>
+                            <a href="/schedule" class="w-full">Employee Schedule</a>
+                        </li>
+                        <li class="py-2 pl-8 cursor-pointer hover:text-gray-900 flex items-center">
                             <i class="fa-solid fa-user-plus w-5 text-center mr-2"></i>
                             <a href="/employee/create" class="w-full">Add Employee</a>
                         </li>

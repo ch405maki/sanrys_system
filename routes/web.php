@@ -9,6 +9,7 @@ use App\Http\Controllers\DeductionController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ScheduleController;
 
 use App\Models\Attendance;
 use Illuminate\Foundation\Application;
@@ -29,6 +30,11 @@ Route::get('/', function () {
 // Dashboard
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
+
+// Schedule
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
 });
 
 // employee

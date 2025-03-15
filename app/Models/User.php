@@ -98,4 +98,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(GovernmentBenefit::class);
     }
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
 }
