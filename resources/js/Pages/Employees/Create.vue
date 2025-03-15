@@ -488,6 +488,12 @@
                                 placeholder="Employee No"
                                 class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
+                        </div>
+                    </div>
+                    <div class="mb-6 border-b py-8">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Date Employed:</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            
                             <input
                                 v-model="form.government_benefits.date_employed"
                                 type="date"
@@ -496,7 +502,6 @@
                             />
                         </div>
                     </div>
-
                     <div class="mt-6 flex items-center justify-end gap-x-6">
                         <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
                         <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">

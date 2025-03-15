@@ -23,9 +23,26 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-        $employees = User::has('profile')->with('profile')->get();
+        $employees = User::has('profile')
+            ->with('profile')
+            ->whereHas('profile', function ($query) {
+                $query->where('status', '!=', 'resigned');
+            })
+            ->get();
     
-        return Inertia::render('Employees/Index', [ 'employees' => $employees ]);
+        return Inertia::render('Employees/Index', ['employees' => $employees]);
+    }
+
+    public function archive()
+    {
+        $employees = User::has('profile')
+            ->with('profile')
+            ->whereHas('profile', function ($query) {
+                $query->where('status', 'resigned');
+            })
+            ->get();
+    
+        return Inertia::render('Employees/Archive', ['employees' => $employees]);
     }
 
     // Start of Store
@@ -55,7 +72,7 @@ class EmployeeController extends Controller
 
             // Skills
             'skills' => 'nullable|array',
-            'skills.*.skill_name' => 'required|string|max:255',
+            'skills.*.skill_name' => 'nullable|string|max:255',
             'skills.*.proficiency_level' => 'nullable|string|max:255',
             'skills.*.description' => 'nullable|string',
 
@@ -151,7 +168,7 @@ class EmployeeController extends Controller
                 ]);
             }
         }
-
+        
         // Store Educational Background
         if ($request->has('educational_background')) {
             $user->educationalBackground()->create($request->educational_background);
@@ -193,7 +210,7 @@ class EmployeeController extends Controller
     {
         // Validate the request
         $request->validate([
-            'status' => 'required|in:active,inactive,suspended', // Ensure the status is valid
+            'status' => 'required', // Ensure the status is valid
         ]);
     
         // Find the user (employee)

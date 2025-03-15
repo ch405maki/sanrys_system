@@ -36,6 +36,10 @@
                             <i class="fa-solid fa-user-plus w-5 text-center mr-2"></i>
                             <a href="/employee/create" class="w-full">Add Employee</a>
                         </li>
+                        <li class="py-2 pl-8 cursor-pointer hover:text-red-700 text-red-500 flex items-center border-t">
+                            <i class="fa-solid fa-user w-4 text-center mr-3"></i>
+                            <a href="/employee/archive" class="w-full">Employee Archive</a>
+                        </li>
                     </ul>
                 </li>
 

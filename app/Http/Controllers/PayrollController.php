@@ -251,7 +251,7 @@ class PayrollController extends Controller
         $userId = auth()->id();
 
         // Fetch the user's data, including their profile
-        $user = User::with('profile')->find($userId);
+        $user = User::with('profile', 'deduction')->find($userId);
 
         // Fetch the latest payroll record for the user
         $payroll = Payroll::where('user_id', $user->id)

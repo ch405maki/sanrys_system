@@ -37,7 +37,7 @@
                         </div>
                         <div>
                         <span 
-                                class="py-1 px-4 rounded-full text-xs font-medium text-white"
+                                class="py-1 px-4 rounded-full text-xs font-medium text-white uppercase"
                                 :class="statusClass(employee.status)"
                             >
                                 {{ employee.status }}

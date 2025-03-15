@@ -34,6 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // employee
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/employee', [EmployeeController::class, 'index'])->name('employee.index');
+    Route::get('/employee/archive', [EmployeeController::class, 'archive'])->name('employee.archive');
     Route::get('/employee/create', function () { return Inertia::render('Employees/Create');})->name('employee.create');
 
     Route::get('/employees/{id}', [EmployeeController::class, 'show'])->name('employee.show');

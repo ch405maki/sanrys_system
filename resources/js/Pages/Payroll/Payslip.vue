@@ -80,11 +80,19 @@
                         </tr>
                         <tr class="border-t border-gray-300 border-dashed">
                             <td class="py-2 text-gray-700">SSS</td>
-                            <td class="p-2 bg-gray-100 text-gray-700">₱</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">₱ {{ user.deduction.sss }}</td>
                         </tr>
                         <tr>
                             <td class="py-2 text-gray-700">Philhealth</td>
-                            <td class="p-2 bg-gray-100 text-gray-700">₱</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">₱ {{ user.deduction.philhealth }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 text-gray-700">Pag Ibig</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">₱ {{ user.deduction.pag_ibig }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 text-gray-700">Maxicare</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">₱ {{ user.deduction.maxicare }}</td>
                         </tr>
                         <tr>
                             <td class="py-2 text-gray-700">Total Deductions</td>
