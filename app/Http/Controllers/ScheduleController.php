@@ -23,6 +23,20 @@ class ScheduleController extends Controller
         ]);
     }
 
+    public function mySchedule()
+    {
+        // Get the currently authenticated user
+        $user = auth()->user();
+    
+        // Load the schedules for the current user
+        $user->load('schedules');
+    
+        // Pass the current user's data as props to the Inertia view
+        return Inertia::render('Schedule/MySchedule', [
+            'user' => $user,
+        ]);
+    }
+
     // Store a new schedule for a user
     public function store(Request $request)
     {

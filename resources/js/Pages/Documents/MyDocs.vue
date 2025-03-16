@@ -7,7 +7,7 @@
                 <div>
                     <div class="flex items-center">
                         <div class="relative">
-                            <img class="h-16 w-16 rounded-full object-cover" :src="'/storage/' + user?.profile?.profile_picture" alt="Profile Picture">
+                            <img class="h-16 w-16 rounded-full object-cover" :src="user?.profile?.profile_picture ? '/storage/' + user?.profile?.profile_picture : '/images/profile/profile.png'" alt="Profile Picture">
                             <div class="absolute inset-0 rounded-full shadow-inner"></div>
                         </div>
                         <div class="ml-4">

@@ -35,6 +35,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // Schedule
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
+    Route::get('/schedule/mySchedule', [ScheduleController::class, 'mySchedule'])->name('schedule.mySchedule');
 });
 
 // employee

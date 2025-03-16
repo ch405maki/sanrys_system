@@ -50,7 +50,7 @@
                                     <tr v-for="user in users" :key="user.id" class="bg-white transition-all duration-500 hover:bg-gray-50">
                                         <td class=" px-5 py-3">
                                             <div class="w-12 flex items-center gap-3">
-                                                <img :src="'/storage/' + user?.profile?.profile_picture" alt="Profile Picture">
+                                                <img class="rounded-full object-cover" :src="user?.profile?.profile_picture ? '/storage/' + user?.profile?.profile_picture : '/images/profile/profile.png'" alt="Avatar">
                                                 <div class="data">
                                                     <p class="font-normal text-sm text-gray-900">{{ user.name }}</p>
                                                     <p class="font-normal text-xs leading-5 text-gray-400"> {{ user.email }} </p>

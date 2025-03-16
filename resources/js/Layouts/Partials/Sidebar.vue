@@ -271,6 +271,23 @@
                     </ul>
                 </li>
 
+                <!-- My Schedule -->
+                <li class="px-4 cursor-pointer hover:text-gray-900">
+                    <div @click="toggleDropdown('mySchedule')" class="py-3 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar-alt text-center  w-5 mr-2"></i>
+                            <span>Schedule</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down w-5 text-center transition-transform duration-300" :class="{ 'rotate-180': openDropdown === 'timeEntries' }"></i>
+                    </div>
+                    <ul v-if="openDropdown === 'mySchedule'" class="ml-4 mt-1 border-l border-gray-300">
+                        <li class="py-2 pl-8 cursor-pointer hover:text-gray-900 flex items-center">
+                            <i class="fa-solid fa-list w-5 text-center mr-2"></i>
+                            <a href="/schedule/mySchedule" class="w-full">My Schedule</a>
+                        </li>
+                    </ul>
+                </li>
+
                 <!-- Profile -->
                 <li class="px-4 py-3 border-t cursor-pointer text-gray-800 hover:bg-green-700 hover:text-white flex items-center">
                     <i class="fa-solid fa-user mr-2 w-5"></i>
