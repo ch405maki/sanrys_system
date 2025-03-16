@@ -14,32 +14,60 @@
         </template>
 
         <main class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4">
-            <!-- Daily Attendance Status -->
-            <div class="mt-4 bg-white rounded-lg p-2 mb-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">Daily Attendance Status</h3>
-                <div class="p-4 bg-gray-100 rounded-lg">
-                    <p class="text-lg font-medium">
-                        Status: 
-                        <span :class="{
-                            'text-green-600': dailyAttendanceStatus.status === 'on_time',
-                            'text-yellow-600': dailyAttendanceStatus.status === 'late',
-                            'text-red-600': dailyAttendanceStatus.status === 'absent',
-                        }">
-                            {{ dailyAttendanceStatus.message }}
-                        </span>
-                    </p>
-                </div>
-            </div>
 
             <!-- Daily Attendance Summary Bar Chart -->
             <div class="mt-4 bg-white rounded-lg p-2 mb-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">Daily Attendance Summary</h3>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Daily Attendance Summary (Last 7 Days)</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <canvas ref="dailyAttendanceChartCanvas" class="h-[150px]"></canvas>
                 </div>
             </div>
 
-            <!-- Rest of your code -->
+            <!-- Recent Employees Table -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="md:col-span-2 p-4 bg-white rounded-lg">
+                    <div class="flex justify-between">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-8">Recent Employees</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-8">Status</h3>
+                    </div>
+                    <div 
+                        v-for="employee in recentEmployees" 
+                        :key="employee.id"
+                        class="flex justify-between items-center border-b py-2"
+                    >
+                        <div>
+                            <p class="font-medium text-sm text-gray-800">{{ employee.name }}</p>
+                            <p class="text-xs text-gray-500">{{ employee.position }}</p>
+                        </div>
+                        <div>
+                            <span 
+                                class="py-1 px-4 rounded-full text-xs font-medium text-white uppercase"
+                                :class="statusClass(employee.status)"
+                            >
+                                {{ employee.status }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:col-span-2 p-4 bg-white rounded-lg">
+                    <div class="flex justify-between">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-8">Compliance</h3>
+                        <a href="" class="text-green-600 hover:text-green-700 hover:underline">All Documents</a>
+                    </div>
+                    <div 
+                        v-for="document in documents" 
+                        :key="document.id"
+                        class="flex justify-between items-center border-b py-2"
+                    >
+                        <div>
+                            <p class="font-medium text-sm text-gray-800">{{ document.document_name }}</p>
+                            <p class="text-xs text-gray-500">{{ document.description }}</p>
+                        </div>
+                        <div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </AuthenticatedLayout>
 </template>
@@ -55,40 +83,57 @@ Chart.register(...registerables);
 const props = defineProps({
     weeklyAttendanceData: Array,
     recentEmployees: Array,
-    complianceData: Object,
+    documents: Object,
     user: Object,
     dailyAttendanceStatus: Object,
-    dailyAttendanceSummary: Object, // Add dailyAttendanceSummary to props
+    attendanceDataForDateRange: Object,
 });
+
+// Define the statusClass function
+const statusClass = (status) => {
+    return {
+        'bg-green-500': status === 'active',
+        'bg-yellow-500': status === 'pending',
+        'bg-red-500': status === 'inactive',
+        'bg-gray-400': !['active', 'pending', 'inactive'].includes(status),
+    };
+};
 
 // Bar Chart for Daily Attendance Summary
 const dailyAttendanceChartCanvas = ref(null);
 
 onMounted(() => {
+    const labels = Object.keys(props.attendanceDataForDateRange);
+    const onTimeData = labels.map(date => props.attendanceDataForDateRange[date].on_time);
+    const lateData = labels.map(date => props.attendanceDataForDateRange[date].late);
+    const absentData = labels.map(date => props.attendanceDataForDateRange[date].absent);
+
     // Daily Attendance Summary Bar Chart
     const ctxDailyAttendance = dailyAttendanceChartCanvas.value.getContext('2d');
     new Chart(ctxDailyAttendance, {
         type: 'bar',
         data: {
-            labels: ['On Time', 'Late', 'Absent'],
+            labels: labels,
             datasets: [
                 {
-                    label: 'Number of Users',
-                    data: [
-                        props.dailyAttendanceSummary.on_time,
-                        props.dailyAttendanceSummary.late,
-                        props.dailyAttendanceSummary.absent,
-                    ],
-                    backgroundColor: [
-                        'rgba(34, 197, 94, 0.5)', // Green for On Time
-                        'rgba(234, 179, 8, 0.5)', // Yellow for Late
-                        'rgba(239, 68, 68, 0.5)', // Red for Absent
-                    ],
-                    borderColor: [
-                        'rgba(34, 197, 94, 1)',
-                        'rgba(234, 179, 8, 1)',
-                        'rgba(239, 68, 68, 1)',
-                    ],
+                    label: 'On Time',
+                    data: onTimeData,
+                    backgroundColor: 'rgba(34, 197, 94, 0.5)', // Green for On Time
+                    borderColor: 'rgba(34, 197, 94, 1)',
+                    borderWidth: 1,
+                },
+                {
+                    label: 'Late',
+                    data: lateData,
+                    backgroundColor: 'rgba(234, 179, 8, 0.5)', // Yellow for Late
+                    borderColor: 'rgba(234, 179, 8, 1)',
+                    borderWidth: 1,
+                },
+                {
+                    label: 'Absent',
+                    data: absentData,
+                    backgroundColor: 'rgba(239, 68, 68, 0.5)', // Red for Absent
+                    borderColor: 'rgba(239, 68, 68, 1)',
                     borderWidth: 1,
                 },
             ],
@@ -101,7 +146,5 @@ onMounted(() => {
             },
         },
     });
-
-    // Rest of your chart initialization code
 });
 </script>

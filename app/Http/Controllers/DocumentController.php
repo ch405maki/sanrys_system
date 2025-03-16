@@ -68,7 +68,7 @@ class DocumentController extends Controller
             'description' => $request->description,     // Add this
             'document_type' => $request->document_type,
             'document_path' => $documentPath, // Store the relative path
-            'status' => 'pending', // Default status
+            'status' => 'submitted', // Default status
         ]);
 
         return response()->json([
