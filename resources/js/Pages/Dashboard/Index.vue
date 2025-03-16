@@ -14,43 +14,32 @@
         </template>
 
         <main class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4">
-            <!-- Charts Section -->
-            <!-- Weekly Attendance Performance Chart -->
+            <!-- Daily Attendance Status -->
             <div class="mt-4 bg-white rounded-lg p-2 mb-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">Weekly Attendance Performance Chart</h3>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Daily Attendance Status</h3>
+                <div class="p-4 bg-gray-100 rounded-lg">
+                    <p class="text-lg font-medium">
+                        Status: 
+                        <span :class="{
+                            'text-green-600': dailyAttendanceStatus.status === 'on_time',
+                            'text-yellow-600': dailyAttendanceStatus.status === 'late',
+                            'text-red-600': dailyAttendanceStatus.status === 'absent',
+                        }">
+                            {{ dailyAttendanceStatus.message }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Daily Attendance Summary Bar Chart -->
+            <div class="mt-4 bg-white rounded-lg p-2 mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Daily Attendance Summary</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <canvas ref="attendanceChartCanvas" class="h-[150px]"></canvas>
+                    <canvas ref="dailyAttendanceChartCanvas" class="h-[150px]"></canvas>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Recent Employees Table -->
-                <div class="md:col-span-2 p-4 bg-white rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-8">Recent Employees</h3>
-                    <div 
-                        v-for="employee in recentEmployees" 
-                        :key="employee.id"
-                        class="flex justify-between items-center border-b py-2"
-                        >
-                        <div>
-                            <p class="font-medium text-sm text-gray-800">{{ employee.name }}</p>
-                            <p class="text-xs text-gray-500">{{ employee.position }}</p>
-                        </div>
-                        <div>
-                        <span 
-                                class="py-1 px-4 rounded-full text-xs font-medium text-white uppercase"
-                                :class="statusClass(employee.status)"
-                            >
-                                {{ employee.status }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Compliance Submission Chart -->
-                <div class="p-4 bg-white rounded-lg ">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-8">Compliance</h3>
-                    <canvas ref="complianceChartCanvas" class="h-[300px]"></canvas>
-                </div>
-            </div>
+
+            <!-- Rest of your code -->
         </main>
     </AuthenticatedLayout>
 </template>
@@ -67,88 +56,52 @@ const props = defineProps({
     weeklyAttendanceData: Array,
     recentEmployees: Array,
     complianceData: Object,
-    user: Object
+    user: Object,
+    dailyAttendanceStatus: Object,
+    dailyAttendanceSummary: Object, // Add dailyAttendanceSummary to props
 });
 
-const statusClass = (status) => {
-    return {
-        'bg-green-500': status === 'active',
-        'bg-yellow-500': status === 'pending',
-        'bg-red-500': status === 'inactive',
-        'bg-gray-400': !['active', 'pending', 'inactive'].includes(status)
-    };
-};
-
-
-// Attendance Chart
-const attendanceChartCanvas = ref(null);
-
-// Compliance Chart
-const complianceChartCanvas = ref(null);
+// Bar Chart for Daily Attendance Summary
+const dailyAttendanceChartCanvas = ref(null);
 
 onMounted(() => {
-    // Attendance Chart
-    const ctxAttendance = attendanceChartCanvas.value.getContext('2d');
-    new Chart(ctxAttendance, {
-        type: 'line',
+    // Daily Attendance Summary Bar Chart
+    const ctxDailyAttendance = dailyAttendanceChartCanvas.value.getContext('2d');
+    new Chart(ctxDailyAttendance, {
+        type: 'bar',
         data: {
-            labels: props.weeklyAttendanceData.map(data => data.week),
+            labels: ['On Time', 'Late', 'Absent'],
             datasets: [
                 {
-                    label: 'Present',
-                    data: props.weeklyAttendanceData.map(data => data.present),
-                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                    borderColor: 'rgba(34, 197, 94, 1)',
-                    tension: 0.3,
-                    borderWidth: 2,
-                    pointRadius: 4,
-                    pointBackgroundColor: 'rgba(34, 197, 94, 1)',
-                    fill: true,
-                },
-                {
-                    label: 'Absent',
-                    data: props.weeklyAttendanceData.map(data => data.absent),
-                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                    borderColor: 'rgba(239, 68, 68, 1)',
-                    tension: 0.3,
-                    borderWidth: 2,
-                    pointRadius: 4,
-                    pointBackgroundColor: 'rgba(239, 68, 68, 1)',
-                    fill: true,
-                },
-                {
-                    label: 'Late',
-                    data: props.weeklyAttendanceData.map(data => data.late),
-                    backgroundColor: 'rgba(234, 179, 8, 0.2)',
-                    borderColor: 'rgba(234, 179, 8, 1)',
-                    tension: 0.3,
-                    borderWidth: 2,
-                    pointRadius: 4,
-                    pointBackgroundColor: 'rgba(234, 179, 8, 1)',
-                    fill: true,
-                }
-            ]
-        }
-    });
-
-    // Compliance Chart
-    const ctxCompliance = complianceChartCanvas.value.getContext('2d');
-    new Chart(ctxCompliance, {
-        type: 'polarArea',
-        data: {
-            labels: ['Submitted'],
-            datasets: [
-                {
+                    label: 'Number of Users',
                     data: [
-                        props.complianceData.submitted,
+                        props.dailyAttendanceSummary.on_time,
+                        props.dailyAttendanceSummary.late,
+                        props.dailyAttendanceSummary.absent,
                     ],
                     backgroundColor: [
-                        'rgba(34, 197, 94, 0.5)', // Green  
+                        'rgba(34, 197, 94, 0.5)', // Green for On Time
+                        'rgba(234, 179, 8, 0.5)', // Yellow for Late
+                        'rgba(239, 68, 68, 0.5)', // Red for Absent
                     ],
-                    borderWidth: 1
-                }
-            ]
-        }
+                    borderColor: [
+                        'rgba(34, 197, 94, 1)',
+                        'rgba(234, 179, 8, 1)',
+                        'rgba(239, 68, 68, 1)',
+                    ],
+                    borderWidth: 1,
+                },
+            ],
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                },
+            },
+        },
     });
+
+    // Rest of your chart initialization code
 });
 </script>

@@ -54,6 +54,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Attendance::class);
     }
+    public function attendance()
+    {
+        return $this->hasMany(Attendance::class);
+    }
     public function documents()
     {
         return $this->hasMany(Document::class);
@@ -66,6 +70,7 @@ class User extends Authenticatable
     {
         return $this->hasOne(Salary::class);
     }
+
     public function deductions()
     {
         return $this->hasOne(Deduction::class);
@@ -74,6 +79,7 @@ class User extends Authenticatable
     {
         return $this->hasOne(Deduction::class);
     }
+
     public function skills()
     {
         return $this->hasMany(Skill::class);
@@ -98,7 +104,12 @@ class User extends Authenticatable
     {
         return $this->hasOne(GovernmentBenefit::class);
     }
+
     public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
+    public function schedule()
     {
         return $this->hasMany(Schedule::class);
     }
