@@ -44,7 +44,7 @@
                                 </div>
 
                                 <!-- Full Name -->
-                                <div class="sm:col-span-3">
+                                <div class="sm:col-span-4">
                                     <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Full name</label>
                                     <div class="mt-2">
                                         <input type="text" id="name" v-model="form.name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
@@ -59,12 +59,23 @@
                                         <p v-if="errors.position" class="mt-2 text-sm text-red-600">{{ errors.position[0] }}</p>
                                     </div>
                                 </div>
+
                                 <!-- Branch -->
-                                <div class="sm:col-span-1">
+                                <div class="sm:col-span-6">
                                     <label for="branch" class="block text-sm font-medium leading-6 text-gray-900">Branch</label>
                                     <div class="mt-2">
                                         <select id="branch" v-model="form.branch" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                            <option value="Pasay">Pasay</option>
+                                            <option value="Main Office">Main Office - Unit 2004, Perla Mansion, C. Palanca St., Legaspi Village, Makati City, Metro Manila</option>
+                                            <option value="JB Guadalupe">JB Guadalupe - Princess Bldg. 2, Ground Floor, Guadalupe Nuevo, Makati City, Metro Manila</option>
+                                            <option value="Robinsons Galleria">Robinsons Galleria - Lower Ground near SSS Office, Robinsons Galleria, Ortigas Ave., Ortigas Center, Quezon City, Metro Manila</option>
+                                            <option value="Unimart">Unimart - Unimart Greenhills Shopping Center, San Juan City, Metro Manila</option>
+                                            <option value="Market Market 1">Market Market 1 - 2nd Floor, Fashion Market, Market! Market!, McKinley Pkwy, Taguig, Metro Manila</option>
+                                            <option value="Market Market 3">Market Market 3 - 2nd Floor near Cebuana Lhuilier, Market! Market!, McKinley Pkwy, Taguig, Metro Manila</option>
+                                            <option value="Makati Ave.">Makati Ave. - A&W Bldg, Makati Ave, Poblacion, Bel Air, Makati City, Metro Manila</option>
+                                            <option value="Cash and Carry">Cash and Carry - Ground Floor, Cash and Carry Mall, Filmore & Emilia St., Palanan, Makati City, Metro Manila</option>
+                                            <option value="The Link">The Link - 2nd Floor, The Link, Makati Ave., Bel Air, Makati City cor. Parkway Dr., San Lorenzo, Makati City, Metro Manila</option>
+                                            <option value="Glorietta 1">Glorietta 1 - Basement 1, Glorietta 1, Hotel Drive, San Lorenzo, Makati City, Metro Manila</option>
+                                            <option value="One Ayala">One Ayala - Lower Ground, One Ayala, Ayala Avenue cor. EDSA, San Lorenzo, Makati City, Metro Manila</option>
                                         </select>
                                         <p v-if="errors.branch" class="mt-2 text-sm text-red-600">{{ errors.branch[0] }}</p>
                                     </div>

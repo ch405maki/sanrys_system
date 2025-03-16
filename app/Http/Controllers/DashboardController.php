@@ -13,47 +13,67 @@ use Carbon\Carbon;
 class DashboardController extends Controller
 {
     public function index()
-    {
-        // Weekly Attendance Performance
-        $weeklyAttendanceData = $this->getWeeklyAttendance();
+{
+    // Weekly Attendance Performance
+    $weeklyAttendanceData = $this->getWeeklyAttendance();
 
-        // Recent Employees
-        $recentEmployees = User::with('profile')
-            ->orderBy('created_at', 'desc')
-            ->limit(4)
-            ->get()
-            ->map(function ($user) {
-                return [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'position' => $user->profile?->position ?? 'N/A',
-                    'status' => $user->status ?? 'Inactive',
-                ];
-            });
+    // Recent Employees
+    $recentEmployees = User::with('profile')
+        ->orderBy('created_at', 'desc')
+        ->limit(4)
+        ->get()
+        ->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'position' => $user->profile?->position ?? 'N/A',
+                'status' => $user->status ?? 'Inactive',
+            ];
+        });
 
-        // Compliance Data (Submitted, Pending, Overdue)
-        $documents = Document::all();
+    // Compliance Data (Counts)
+    $complianceData = [
+        'submitted' => Document::where('status', 'Submitted')->count(),
+        'pending' => Document::where('status', 'Pending')->count(),
+        'overdue' => Document::where('status', 'Overdue')->count(),
+    ];
 
-        // Get the authenticated user
-        $user = auth()->user();
+    // Total Users
+    $totalUsers = User::count();
 
-        // Get the user's daily attendance status
-        $dailyAttendanceStatus = $this->getDailyAttendanceStatus($user);
+    // Total Attendance for Today
+    $totalAttendanceToday = Attendance::whereDate('time_in', Carbon::today()->toDateString())->count();
 
-        // Get attendance data for the last 7 days
-        $startDate = Carbon::today()->subDays(6)->toDateString(); // Last 7 days including today
-        $endDate = Carbon::today()->toDateString();
-        $attendanceDataForDateRange = $this->getAttendanceDataForDateRange($startDate, $endDate);
+    // Total Documents
+    $totalDocuments = Document::count();
 
-        return Inertia::render('Dashboard/Index', [
-            'weeklyAttendanceData' => $weeklyAttendanceData,
-            'recentEmployees' => $recentEmployees,
-            'documents' => $documents,
-            'user' => $user,
-            'dailyAttendanceStatus' => $dailyAttendanceStatus,
-            'attendanceDataForDateRange' => $attendanceDataForDateRange,
-        ]);
-    }
+    $documents = Document::all();
+
+    // Get the authenticated user
+    $user = auth()->user();
+
+    // Get the user's daily attendance status
+    $dailyAttendanceStatus = $this->getDailyAttendanceStatus($user);
+
+    // Get attendance data for the last 7 days
+    $startDate = Carbon::today()->subDays(6)->toDateString(); // Last 7 days including today
+    $endDate = Carbon::today()->toDateString();
+    $attendanceDataForDateRange = $this->getAttendanceDataForDateRange($startDate, $endDate);
+
+    return Inertia::render('Dashboard/Index', [
+        'weeklyAttendanceData' => $weeklyAttendanceData,
+        'recentEmployees' => $recentEmployees,
+        'complianceData' => $complianceData,
+        'totalUsers' => $totalUsers,
+        'totalAttendanceToday' => $totalAttendanceToday,
+        'totalDocuments' => $totalDocuments,
+        'user' => $user,
+        'documents' => $documents,
+        'dailyAttendanceStatus' => $dailyAttendanceStatus,
+        'attendanceDataForDateRange' => $attendanceDataForDateRange,
+    ]);
+}
+
 
     /**
      * Get the daily attendance status for the authenticated user.
