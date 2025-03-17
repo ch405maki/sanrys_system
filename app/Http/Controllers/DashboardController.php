@@ -13,8 +13,13 @@ use Carbon\Carbon;
 class DashboardController extends Controller
 {
     public function index()
-    {
-        // Weekly Attendance Performance
+{
+    // Get the authenticated user
+    $user = auth()->user();
+
+    // Check if the user is an administrator
+    if ($user->role === 'administrator') {
+        // Administrator Dashboard Data
         $weeklyAttendanceData = $this->getWeeklyAttendance();
 
         // Recent Employees
@@ -49,9 +54,6 @@ class DashboardController extends Controller
 
         $documents = Document::all();
 
-        // Get the authenticated user
-        $user = auth()->user();
-
         // Get the user's daily attendance status
         $dailyAttendanceStatus = $this->getDailyAttendanceStatus($user);
 
@@ -72,7 +74,19 @@ class DashboardController extends Controller
             'dailyAttendanceStatus' => $dailyAttendanceStatus,
             'attendanceDataForDateRange' => $attendanceDataForDateRange,
         ]);
+    } else {
+        // Regular User Dashboard Data
+        $dailyAttendanceStatus = $this->getDailyAttendanceStatus($user);
+
+        // Load the user's schedules
+        $user->load('schedules');
+
+        return Inertia::render('Dashboard/UserDashboard', [
+            'user' => $user,
+            'dailyAttendanceStatus' => $dailyAttendanceStatus,
+        ]);
     }
+}
 
 
     /**
