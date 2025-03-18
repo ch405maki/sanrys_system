@@ -48,8 +48,10 @@
                                     <tbody class="divide-y divide-gray-300">
                                         <tr v-for="employee in filteredEmployees" :key="employee.id" class="bg-white transition-all duration-500 hover:bg-gray-50">
                                             <td class="px-5 py-3">
-                                                <div class="w-12 flex items-center gap-3">
-                                                    <img :src="employee?.profile?.profile_picture ? '/storage/' + employee?.profile?.profile_picture : '/images/profile/profile.png'" alt="Profile Picture">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-full flex-items-center gap-2">
+                                                        <img class="w-full h-full rounded-full object-cover" :src="employee?.profile?.profile_picture ? '/storage/' + employee?.profile?.profile_picture : '/images/profile/profile.png'" alt="Profile Picture">
+                                                    </div>
                                                     <div class="data">
                                                         <p class="font-normal text-sm text-gray-900">{{ employee.name }}</p>
                                                         <p class="font-normal text-xs leading-5 text-gray-400"> {{ employee.email }} </p>
