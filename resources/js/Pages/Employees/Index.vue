@@ -106,6 +106,7 @@
                     <label class="block text-sm font-medium text-gray-700">Select Status</label>
                     <select v-model="selectedStatus" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
                         <option value="active">Active</option>
+                        <option value="on leave">On Leave</option>
                         <option value="inactive">Inactive</option>
                         <option value="suspended">Suspended</option>
                         <option value="resigned">Resigned</option>

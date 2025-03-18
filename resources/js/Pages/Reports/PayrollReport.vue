@@ -23,7 +23,9 @@
                         <select v-model="filters.cutOff" class="input-field" @change="updatePayrollDate">
                             <option value="">All</option>
                             <option value="1-15">1-15</option>
+                            <option value="16-28">16-28</option>
                             <option value="16-30">16-30</option>
+                            <option value="16-31">16-31</option>
                         </select>
                     </div>
                     <div>
