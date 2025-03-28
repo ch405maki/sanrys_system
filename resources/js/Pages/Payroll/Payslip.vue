@@ -19,8 +19,9 @@
                     <span v-if="isLoading">Loading...</span>
                     <span v-else><i class="fa-solid fa-filter"></i> Filter Payslip</span>
                 </button>
-                    <a href="" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed">
-                        <i class="fa-solid fa-file-export"></i> Export</a>
+                <a @click="exportToExcel" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer">
+                    <i class="fa-solid fa-file-export"></i> Export
+                </a>
             </div>
         </div>
     </template>
@@ -80,23 +81,23 @@
                         </tr>
                         <tr class="border-t border-gray-300 border-dashed">
                             <td class="py-2 text-gray-700">SSS</td>
-                            <td class="p-2 bg-gray-100 text-gray-700">₱ {{ user.deduction.sss }}</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">₱ {{ user?.deduction?.sss || '0' }}</td>
                         </tr>
                         <tr>
                             <td class="py-2 text-gray-700">Philhealth</td>
-                            <td class="p-2 bg-gray-100 text-gray-700">₱ {{ user.deduction.philhealth }}</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">₱ {{ user?.deduction?.philhealth || '0' }}</td>
                         </tr>
                         <tr>
                             <td class="py-2 text-gray-700">Pag Ibig</td>
-                            <td class="p-2 bg-gray-100 text-gray-700">₱ {{ user.deduction.pag_ibig }}</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">₱ {{ user?.deduction?.pag_ibig || '0' }}</td>
                         </tr>
                         <tr>
                             <td class="py-2 text-gray-700">Maxicare</td>
-                            <td class="p-2 bg-gray-100 text-gray-700">₱ {{ user.deduction.maxicare }}</td>
+                            <td class="p-2 bg-gray-100 text-gray-700">₱ {{ user?.deduction?.maxicare || '0'}}</td>
                         </tr>
                         <tr>
                             <td class="py-2 text-gray-700">Total Deductions</td>
-                            <td class="p-2 bg-red-100 text-gray-700">₱{{ payroll.deductions }}</td>
+                            <td class="p-2 bg-red-100 text-gray-700">₱ {{ payroll.deductions }}</td>
                         </tr>
                         <tr class="border-t border-dashed border-gray-300 ">
                             <td class="py-2 text-gray-700"></td>
@@ -122,6 +123,7 @@ import { ref } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import * as XLSX from 'xlsx';
 
 const props = defineProps({
     payroll: Object,
@@ -131,18 +133,65 @@ const props = defineProps({
 });
 
 const selectedCutOff = ref('1-15');
-const selectedMonth = ref(new Date().toISOString().slice(0, 7)); // Default to current month
-const isLoading = ref(false); // Add a loading state
+const selectedMonth = ref(new Date().toISOString().slice(0, 7));
+const isLoading = ref(false);
 
 const filterPayslip = () => {
-    isLoading.value = true; // Set loading to true
+    isLoading.value = true;
     Inertia.get('/filter-payslip', {
         cut_off_period: selectedCutOff.value,
         month: selectedMonth.value
     }, {
         onFinish: () => {
-            isLoading.value = false; // Reset loading state
+            isLoading.value = false;
         }
     });
+};
+
+const exportToExcel = () => {
+    if (!props.payroll) {
+        alert('No data to export');
+        return;
+    }
+
+    // Prepare the data for export
+    const data = [
+        ['Employee Name', props.user.name],
+        ['Position', props.user?.profile?.position],
+        ['Branch', props.user?.profile?.branch],
+        ['Email', props.user.email],
+        ['Address', props.user?.profile?.present_address],
+        [],
+        ['PAY PERIOD', ''],
+        ['Date Start', props.payroll.pay_period_start],
+        ['Date End', props.payroll.pay_period_end],
+        ['Cut Off', props.payroll.cut_off_period],
+        [],
+        ['Breakdown', 'Total'],
+        ['Total Work Day', props.total_workdays],
+        ['Basic Salary', `₱${props.payroll.basic_salary}`],
+        ['Overtime Pay', `₱${props.payroll.overtime_pay}`],
+        ['Holiday Pay', `₱${props.payroll.holiday_pay}`],
+        ['Allowance', `₱${props.payroll.allowance}`],
+        [],
+        ['SSS', `₱${props.user?.deduction?.sss || '0'}`],
+        ['Philhealth', `₱${props.user?.deduction?.philhealth || '0'}`],
+        ['Pag Ibig', `₱${props.user?.deduction?.pag_ibig || '0'}`],
+        ['Maxicare', `₱${props.user?.deduction?.maxicare || '0'}`],
+        ['Total Deductions', `₱${props.payroll.deductions}`],
+        [],
+        ['Total Pay', `₱${props.payroll.net_pay}`]
+    ];
+
+    // Create a new workbook
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Payslip');
+    
+    // Generate the Excel file and trigger download
+    const fileName = `Payslip_${props.user.name}_${props.payroll.pay_period_start}_to_${props.payroll.pay_period_end}.xlsx`;
+    XLSX.writeFile(wb, fileName);
 };
 </script>

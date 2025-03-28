@@ -224,8 +224,8 @@ class PayrollController extends Controller
         // Get the current user's ID
         $userId = auth()->id();
 
-        // Fetch the user's data, including their profile
-        $user = User::with('profile')->find($userId);
+        // Fetch the user's data, including their profile AND deductions
+        $user = User::with(['profile', 'deduction'])->find($userId);
 
         $cutOffPeriod = $request->input('cut_off_period');
         $month = $request->input('month'); // Format: YYYY-MM
@@ -250,11 +250,11 @@ class PayrollController extends Controller
 
         return Inertia::render('Payroll/Payslip', [
             'payroll' => $payroll,
-            'user' => $user,
-            'total_workdays' => $payroll ? $payroll->total_workdays : null, // Pass total_workdays
+            'user' => $user, // This now includes deductions
+            'total_workdays' => $payroll ? $payroll->total_workdays : null,
         ]);
     }
-
+    
     public function payslip(Request $request)
     {
         // Get the current user's ID
